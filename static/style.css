@@ -76,12 +76,29 @@
     color: #0d6efd;
 }
 
+
+
 .loginButton {
     background-color: #173356;
     border-color: #173356;
 }
 
 .loginButton:hover{
+    background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+/*Register Page */
+#registerLogo {
+width: 220px;
+height: auto;
+}
+.registerButton {
+  background-color: #173356;
+  border-color: #173356;
+}
+
+.registerButton:hover {
     background-color: #4c8cdb;
     border-color: #4c8cdb;
 }
