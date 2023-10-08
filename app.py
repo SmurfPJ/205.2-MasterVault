@@ -7,6 +7,12 @@ app = Flask(__name__)
 def base():  # put application's code here
     return render_template('base.html')
 
+# will be deleting the base html as an app route once other pages are set up
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
