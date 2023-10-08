@@ -1,0 +1,50 @@
+.logo-bar {
+    padding: 23px;
+    text-align: left;
+    border-bottom: 2px solid #173356;
+}
+
+.logo {
+    max-width: 330px;
+    height: auto;
+}
+
+.nav-drawer {
+    width: 280px;
+    height: calc(100vh - 10vh);
+    background-color: white;
+    padding-top: 160px;
+    padding-bottom: 20px;
+    border-right: 2px solid #173356;
+    box-shadow: 10px 0px 0px 0px #738499;
+}
+
+.nav-drawer a {
+    padding: 20px 15px;
+    text-decoration: none;
+    font-size: 20px;
+    color: black;
+    display: block;
+    white-space: nowrap;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-drawer ul {
+    list-style-type: none;  /* Removes the bullets */
+    padding: 15px;
+    margin: 0;  /* Removes default margin */
+}
+
+.nav-drawer li {
+    margin-bottom: 10px;
+}
+
+.nav-drawer a:hover {
+   color: white;
+    background-color: #999999;
+}
+
+.container {
+    padding-left: 280px;
+}
