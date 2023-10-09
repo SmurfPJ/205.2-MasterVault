@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
@@ -16,6 +16,10 @@ def login():
 @app.route('/register', methods=['GET','POST'])
 def register():
     return render_template('register.html')
+
+@app.route('/master_password', methods=['GET', 'POST'])
+def master_password():
+    return render_template('masterPassword.html')
 
 
 

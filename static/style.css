@@ -102,3 +102,19 @@ height: auto;
     background-color: #4c8cdb;
     border-color: #4c8cdb;
 }
+
+/*Master Password*/
+#masterPasswordLogo {
+width: 230px;
+height: auto;
+}
+
+.masterPasswordButton {
+background-color: #173356;
+  border-color: #173356;
+}
+
+.masterPasswordButton:hover {
+background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}

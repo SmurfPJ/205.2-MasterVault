@@ -33,3 +33,15 @@ function toggleConfirmPasswordVisibility() {
         toggleConfirmPasswordIcon.className = 'bi bi-eye';
     }
 }
+
+function togglePasswordVisibility() {
+    const passwordInput = document.getElementById('master_password');
+    const togglePasswordIcon = document.getElementById('toggleMasterPasswordIcon');
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        togglePasswordIcon.className = 'bi bi-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        togglePasswordIcon.className = 'bi bi-eye';
+    }
+}
