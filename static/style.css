@@ -10,14 +10,16 @@
     height: auto;
 }
 
+
 .nav-drawer {
     width: 280px;
-    height: calc(100vh - 10vh);
+    height: 100vh;
     background-color: white;
     padding-top: 160px;
     padding-bottom: 20px;
     border-right: 2px solid #173356;
     box-shadow: 10px 0px 0px 0px #738499;
+
 }
 
 .nav-drawer a {
@@ -118,3 +120,33 @@ background-color: #173356;
 background-color: #4c8cdb;
     border-color: #4c8cdb;
 }
+
+#passwordMatchMessage {
+    font-size: 13px;
+}
+
+.settings-container {
+    padding-left: 350px;
+    margin-top: -750px;
+}
+
+
+.section-box {
+    border: 2px solid #173356;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    width: 1050px;  /* Optional: to ensure the box doesn't get too wide on large screens */
+    background-color: #f8f8f8;
+}
+
+.section-title {
+    margin-bottom: 5px;
+}
+
+/* Remove bullet points from the list */
+.list-unstyled {
+    list-style-type: none;
+    padding-left: 0;
+}
+

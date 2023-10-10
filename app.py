@@ -17,10 +17,13 @@ def login():
 def register():
     return render_template('register.html')
 
-@app.route('/master_password', methods=['GET', 'POST'])
+@app.route('/master_password_setup', methods=['GET', 'POST'])
 def master_password():
     return render_template('masterPassword.html')
 
+@app.route('/settings', methods=['GET'])
+def settings():
+    return render_template('settings.html')
 
 
 

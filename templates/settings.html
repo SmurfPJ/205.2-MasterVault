@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block head %}
+ <title>Settings</title>
+{% endblock %}
+
+
+{% block body %}
+<div class="settings-container">
+    <h1 class="mb-5">SETTINGS</h1>
+
+    <h5 class="section-title mb-1">Account Settings</h5>
+    <div class="section-box mb-5">
+        <ul class="list-unstyled">
+            <li class="mb-4">Logged in as: </li>
+            <li class="mb-4">Two-Step Verification</li>
+            <li>Change Master Password</li>
+        </ul>
+    </div>
+
+    <h4 class="section-title mb-1">Lock</h4>
+    <div class="section-box mb-5">
+        <ul class="list-unstyled">
+            <li>Lock for: </li>
+        </ul>
+    </div>
+
+    <h4 class="section-title mb-1">Reset/Delete</h4>
+    <div class="section-box mb-5">
+        <ul class="list-unstyled">
+            <li class="mb-4">Reset Password</li>
+            <li>Delete MasterVault Account</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
