@@ -150,3 +150,57 @@ background-color: #4c8cdb;
     padding-left: 0;
 }
 
+.btn-sm {
+    background-color: #173356;
+    border-color: #173356;
+    width: 100px;
+    text-align: center;
+    line-height: 25px;
+}
+
+.btn-sm:hover {
+background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+
+.form-check-input {
+    width: 30px;
+    height: 18px;
+    text-align: center;
+}
+
+
+.form-check-input::after {
+    width: 30px;
+    height: 18px;
+    background-color: #173356;
+    border-radius: 50%;
+    transition: transform .3s;
+    transform: translateX(0);
+}
+
+.form-check-input:checked {
+    background-color: #4caf50;
+}
+
+.form-check-input:checked + .form-check-input::after {
+    transform: translateX(1em);
+}
+
+input[type=range] {
+    width: 400px;
+    margin-left: 300px;
+}
+
+.lockSlider{
+    margin-right: 500px;
+}
+
+.btn-warning, .btn-danger {
+    background-color: #173356;
+    border-color: #173356;
+    color: white;
+    width: 100px;
+    text-align: center;
+}

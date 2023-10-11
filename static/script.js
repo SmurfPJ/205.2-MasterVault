@@ -88,3 +88,14 @@ function checkMasterPasswordMatch() {
         passwordMatchMessage.innerText = 'Passwords do not match';
     }
 }
+
+function updateRangeLabel() {
+    var rangeValue = document.getElementById('lockRange').value;
+    document.getElementById('lockRangeLabel').innerText = rangeValue * 10 + ' minutes';
+}
+
+function toggleSlider() {
+    var lockSwitch = document.getElementById('lockSwitch').checked;
+    var lockRange = document.getElementById('lockRange');
+    lockRange.disabled = !lockSwitch;
+}
