@@ -124,7 +124,7 @@ function checkPasswordStrength(password) {
         color: 'red'
     };
 
-    if (password.length >= 5) {
+    if (password.length >= 8) {
         strength.score += 1;
     }
     if (/[0-9]/.test(password)) {

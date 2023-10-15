@@ -22,19 +22,24 @@ def generate_password(keyword, length, use_numbers, use_symbols):
     while len(keyword) < length:
         keyword += random.choice(characters)
 
-        # Pattern is basically every third character from the keyword (subjected to change)
-        password = ""
-        for i in range(length):
-            if i % 3 == 0 and i/3 < len(keyword):
-                password += keyword[i//3]
-            else:
-                password += random.choice(characters)
+    # Pattern is basically every third character from the keyword (subjected to change)
+    password = ""
+    for i in range(length):
+        if i % 3 == 0 and i//3 < len(keyword):
+            password += keyword[i//3]
+        else:
+            password += random.choice(characters)
 
-        return password
+    return password
+
 
 
 def check_password_strength(password):
     strength = {'status': 'Weak', 'score': 0, 'color': 'red'}
+
+    # Check if password is None or empty and return weak strength immediately
+    if not password:
+        return strength
 
     if len(password) >= 8:
         strength['score'] += 1
@@ -63,6 +68,7 @@ def check_password_strength(password):
         strength['color'] = 'red'
 
     return strength
+
 
 
 @app.route('/create_password', methods=['GET', 'POST'])
