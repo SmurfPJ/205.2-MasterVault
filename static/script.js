@@ -16,6 +16,13 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+document.getElementById('generated-password').addEventListener('input', function() {
+    var password = document.getElementById('generated-password').value;
+    var strength = checkPasswordStrength(password);
+    updateStrengthIndicator(strength);
+});
+
+
 //login & signup password toggle button//
 function togglePasswordVisibility() {
     const passwordInput = document.getElementById('password');
@@ -106,6 +113,8 @@ function toggleSlider() {
     lockRange.disabled = !lockSwitch;
 }
 
+
+//generate passwords
 function validateForm() {
     var useNumbers = document.getElementById('numbers').checked;
     var useSymbols = document.getElementById('symbols').checked;
@@ -117,45 +126,6 @@ function validateForm() {
     return true;
 }
 
-function checkPasswordStrength(password) {
-    var strength = {
-        status: 'Weak',
-        score: 0,
-        color: 'red'
-    };
-
-    if (password.length >= 8) {
-        strength.score += 1;
-    }
-    if (/[0-9]/.test(password)) {
-        strength.score += 1;
-    }
-    if (/[A-Z]/.test(password)) {
-        strength.score += 1;
-    }
-    if (/[^a-zA-Z0-9]/.test(password)) {
-        strength.score += 1;
-    }
-
-    // Update status and color based on score
-    if (strength.score === 4) {
-        strength.status = 'Very Strong';
-        strength.color = 'green';
-    } else if (strength.score === 3) {
-        strength.status = 'Strong';
-        strength.color = 'lightgreen';
-    } else if (strength.score === 2) {
-        strength.status = 'Moderate';
-        strength.color = 'orange';
-    } else {
-        strength.status = 'Weak';
-        strength.color = 'red';
-    }
-
-    document.getElementById('password-strength-bar').style.width = (strength.score * 25) + '%';
-    document.getElementById('password-strength-bar').style.backgroundColor = strength.color;
-    document.getElementById('password-strength-text').innerText = strength.status;
-}
 
 function generatePassword(keyword, length, useNumbers, useSymbols) {
     var characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" + keyword;
@@ -180,6 +150,13 @@ function generatePassword(keyword, length, useNumbers, useSymbols) {
     return password;
 }
 
+
+function updateStrengthIndicator(strength) {
+    document.getElementById('strength-bar-inner').style.width = (strength.score * 25) + '%';
+    document.getElementById('strength-bar-inner').style.backgroundColor = strength.color;
+    document.getElementById('strength-text').innerText = strength.status;
+}
+
 function refreshPassword() {
     var keyword = document.getElementById('keyword-input').value;
     var length = document.getElementById('length-input').value;
@@ -189,9 +166,34 @@ function refreshPassword() {
     var newPassword = generatePassword(keyword, length, useNumbers, useSymbols);
     document.getElementById('generated-password').value = newPassword;
 
-    // Update the password strength indicator real-time as password refreshes
+    // Update the password strength checker
     checkPasswordStrength(newPassword);
 }
+
+
+function checkPasswordStrength(password) {
+    var strength = {status: 'Weak', score: 0, color: 'red'};
+
+    if (password.length >= 8) strength.score += 1;
+    if (/[0-9]/.test(password)) strength.score += 1;
+    if (/[A-Z]/.test(password)) strength.score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) strength.score += 1;
+
+    if (strength.score === 4) {
+        strength.status = 'Very Strong';
+        strength.color = 'green';
+    } else if (strength.score === 3) {
+        strength.status = 'Strong';
+        strength.color = 'lightgreen';
+    } else if (strength.score === 2) {
+        strength.status = 'Moderate';
+        strength.color = 'orange';
+    }
+
+    // Update the UI with the calculated strength
+    updateStrengthIndicator(strength);
+}
+
 
 function copyToClipboard() {
     // Copy password to clipboard
@@ -206,5 +208,4 @@ function copyToClipboard() {
     setTimeout(function () {
         document.getElementById('clipboard-icon').className = 'bi bi-clipboard';
     }, 2000); //2 seconds
-
 }
