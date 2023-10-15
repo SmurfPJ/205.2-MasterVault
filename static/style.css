@@ -125,6 +125,7 @@ background-color: #4c8cdb;
     font-size: 13px;
 }
 
+/*Settings*/
 .settings-container {
     padding-left: 350px;
     margin-top: -750px;
@@ -203,4 +204,40 @@ input[type=range] {
     color: white;
     width: 100px;
     text-align: center;
+}
+
+/*Password Generator*/
+.password-container {
+ padding-left: 350px;
+    margin-top: -750px;
+}
+
+.refreshButton {
+ background-color: #173356;
+    border-color: #173356;
+}
+
+.refreshButton:hover {
+ background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+.clipboardButton {
+background-color: #173356;
+    border-color: #173356;
+}
+
+.clipboardButton:hover {
+ background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+.generatePasswordbutton {
+background-color: #173356;
+    border-color: #173356;
+}
+
+.generatePasswordbutton:hover {
+ background-color: #4c8cdb;
+    border-color: #4c8cdb;
 }
