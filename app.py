@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import random
 import string
-from forms import  RegistrationForm, LoginForm
+from forms import RegistrationForm, LoginForm
 import csv
 
 #Database paths
@@ -125,7 +125,7 @@ def login():
             file.close()
             return redirect(url_for('settings'))
     file.close()
-    return render_template("login.html",form = cform)
+    return render_template("login.html", form=cform)
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -135,12 +135,18 @@ def register():
             writer = csv.writer(file)
             writer.writerow([cform.username.data, cform.email.data, cform.dob.data, cform.password.data])
         return redirect(url_for('settings')) 
-    return render_template("register.html",form = cform)
+    return render_template("register.html", form=cform)
+
+
 @app.route('/master_password_setup', methods=['GET', 'POST'])
 def master_password():
     return render_template('masterPassword.html')
+
+
 @app.route('/settings', methods=['GET'])
 def settings():
     return render_template('settings.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
