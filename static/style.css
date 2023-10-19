@@ -1,0 +1,244 @@
+/* base */
+.logo-bar {
+    padding: 23px;
+    text-align: left;
+    border-bottom: 2px solid #173356;
+}
+
+.baseLogo {
+    max-width: 330px;
+    height: auto;
+}
+
+
+.nav-drawer {
+    width: 280px;
+    height: 100vh;
+    background-color: white;
+    padding-top: 160px;
+    padding-bottom: 20px;
+    border-right: 2px solid #173356;
+    box-shadow: 10px 0px 0px 0px #738499;
+
+}
+
+.nav-drawer a {
+    padding: 20px 15px;
+    text-decoration: none;
+    font-size: 20px;
+    color: black;
+    display: block;
+    white-space: nowrap;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-drawer ul {
+    list-style-type: none;  /* Removes the bullets */
+    padding: 15px;
+    margin: 0;  /* Removes default margin */
+}
+
+.nav-drawer li {
+    margin-bottom: 10px;
+}
+
+.nav-drawer a:hover {
+   color: white;
+    background-color: #8b99aa;
+}
+
+/*login page*/
+#loginLogo {
+    width: 230px;
+    height: auto;
+}
+
+.login-container {
+    padding-top: 100px;
+}
+
+.registerPasswordlink {
+    color: #0d6efd;
+    font-size: 15px;
+}
+
+.registerPasswordlink:hover {
+    color: #0a58ca;
+}
+
+
+.forgotPasswordlink {
+    color: #0d6efd;
+    font-size: 15px;
+    text-decoration-line: underline;
+}
+
+.forgotPasswordlink:hover {
+    color: #0d6efd;
+}
+
+
+
+.loginButton {
+    background-color: #173356;
+    border-color: #173356;
+}
+
+.loginButton:hover{
+    background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+/*Register Page */
+#registerLogo {
+width: 220px;
+height: auto;
+}
+.registerButton {
+  background-color: #173356;
+  border-color: #173356;
+}
+
+.registerButton:hover {
+    background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+/*Master Password*/
+#masterPasswordLogo {
+width: 230px;
+height: auto;
+}
+
+.masterPasswordButton {
+background-color: #173356;
+  border-color: #173356;
+}
+
+.masterPasswordButton:hover {
+background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+#passwordMatchMessage {
+    font-size: 13px;
+}
+
+/*Settings*/
+.settings-container {
+    padding-left: 350px;
+    margin-top: -750px;
+}
+
+
+.section-box {
+    border: 2px solid #173356;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    width: 1050px;  /* Optional: to ensure the box doesn't get too wide on large screens */
+    background-color: #f8f8f8;
+}
+
+.section-title {
+    margin-bottom: 5px;
+}
+
+/* Remove bullet points from the list */
+.list-unstyled {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.btn-sm {
+    background-color: #173356;
+    border-color: #173356;
+    width: 100px;
+    text-align: center;
+    line-height: 25px;
+}
+
+.btn-sm:hover {
+background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+
+.form-check-input {
+    width: 30px;
+    height: 18px;
+    text-align: center;
+}
+
+
+.form-check-input::after {
+    width: 30px;
+    height: 18px;
+    background-color: #173356;
+    border-radius: 50%;
+    transition: transform .3s;
+    transform: translateX(0);
+}
+
+.form-check-input:checked {
+    background-color: #4caf50;
+}
+
+.form-check-input:checked + .form-check-input::after {
+    transform: translateX(1em);
+}
+
+input[type=range] {
+    width: 400px;
+    margin-left: 300px;
+}
+
+.lockSlider{
+    margin-right: 500px;
+}
+
+.btn-warning, .btn-danger {
+    background-color: #173356;
+    border-color: #173356;
+    color: white;
+    width: 100px;
+    text-align: center;
+}
+
+/*Password Generator*/
+.password-container {
+ padding-left: 350px;
+    margin-top: -750px;
+}
+
+.refreshButton {
+ background-color: #173356;
+    border-color: #173356;
+}
+
+.refreshButton:hover {
+ background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+.clipboardButton {
+background-color: #173356;
+    border-color: #173356;
+}
+
+.clipboardButton:hover {
+ background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+.generatePasswordbutton {
+background-color: #173356;
+    border-color: #173356;
+}
+
+.generatePasswordbutton:hover {
+ background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
