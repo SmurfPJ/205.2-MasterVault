@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "MasterVault",
+  "version": "1.0",
+  "description": "Made by 2 clueless college students ._.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/Logo16x16.png",
+      "48": "images/Logo48x48.png"
+    }
+  },
+  "icons": {
+    "16": "images/Logo16x16.png",
+    "48": "images/Logo48x48.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://127.0.0.1:5000/*"],
+      "js": ["popup.js"]
+    }
+  ]
+}
+
