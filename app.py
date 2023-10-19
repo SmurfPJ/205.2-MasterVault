@@ -134,21 +134,13 @@ def register():
         with open('loginInfo.csv', 'a', newline='') as file: # Saves data to csv
             writer = csv.writer(file)
             writer.writerow([cform.username.data, cform.email.data, cform.dob.data, cform.password.data])
-        # Goes to home page (Settings for now)
         return redirect(url_for('settings')) 
-    
     return render_template("register.html",form = cform)
-
 @app.route('/master_password_setup', methods=['GET', 'POST'])
 def master_password():
-
     return render_template('masterPassword.html')
-
 @app.route('/settings', methods=['GET'])
 def settings():
     return render_template('settings.html')
-
-
-
 if __name__ == '__main__':
     app.run(debug=True)
