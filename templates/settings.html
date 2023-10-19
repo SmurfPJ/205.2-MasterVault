@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block head %}
+ <title>Settings</title>
+{% endblock %}
+
+
+{% block body %}
+<div class="settings-container">
+    <h1 class="mb-5">SETTINGS</h1>
+
+    <h5 class="section-title mb-1">Account Settings</h5>
+    <div class="section-box mb-5">
+        <ul class="list-unstyled">
+           <li class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>Logged in as: <strong>Username</strong></span>
+                        <button class="btn btn-secondary btn-sm">LOG OUT</button>
+                    </div>
+            <li class="mb-4 d-flex justify-content-between align-items-center">
+                <span>Two-Step Verification</span>
+                <div class="form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" id="twoStepVerification">
+                    <label class="form-check-label" for="twoStepVerification"></label>
+                </div>
+            </li>
+            <li>Change Master Password</li>
+        </ul>
+    </div>
+
+    <h4 class="section-title mb-1">Lock</h4>
+    <div class="section-box mb-5">
+        <ul class="list-unstyled">
+          <li class="d-flex align-items-center">
+            <span class="me-5">Lock for: </span>
+            <div class="form-check form-switch me-6">
+                 <input class="form-check-input" type="checkbox" id="lockSwitch" onchange="toggleSlider()">
+            </div>
+            <input type="range" min="1" max="5" value="1" class="slider me-5" id="lockRange" oninput="updateRangeLabel()" disabled>
+            <span id="lockRangeLabel">10 minutes</span>
+        </li>
+        </ul>
+    </div>
+
+    <h4 class="section-title mb-1">Reset/Delete</h4>
+    <div class="section-box mb-5">
+        <ul class="list-unstyled">
+           <li class="d-flex justify-content-between align-items-center">
+            Reset Password
+            <button type="button" class="btn btn-warning mb-4">RESET</button>
+        </li>
+        <li class="d-flex justify-content-between align-items-center">
+            Delete MasterVault Account
+            <button type="button" class="btn btn-danger">DELETE</button>
+        </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+
