@@ -135,7 +135,7 @@ def register():
             writer = csv.writer(file)
             writer.writerow([cform.username.data, cform.email.data, cform.dob.data, cform.password.data])
         return redirect(url_for('settings')) 
-    return render_template("register.html", form=cform)
+    return render_template("register.html",form = cform)
 
 
 @app.route('/master_password_setup', methods=['GET', 'POST'])
