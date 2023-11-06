@@ -1,6 +1,7 @@
 // Check if we're in the context of the browser extension
 var isExtensionContext = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id;
 
+
 document.addEventListener("DOMContentLoaded", function() {
     // Elements
     var keywordInput = document.getElementById('keyword-input');

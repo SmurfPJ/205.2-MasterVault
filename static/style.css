@@ -54,6 +54,12 @@
     height: auto;
 }
 
+.LoginTitleFont {
+font-family: Inter, sans-serif;
+    font-weight: bold;
+    color: #173356;
+}
+
 .login-container {
     padding-top: 100px;
 }
@@ -102,6 +108,12 @@ height: auto;
 .registerButton:hover {
     background-color: #4c8cdb;
     border-color: #4c8cdb;
+}
+
+.titleFontregister {
+    font-family: Inter, sans-serif;
+    font-weight: bold;
+    color: #173356;
 }
 
 /*Master Password*/

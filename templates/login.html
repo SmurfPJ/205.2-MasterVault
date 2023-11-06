@@ -20,7 +20,7 @@
             <form method="POST" action="">
                 {{ form.hidden_tag() }}
                 <fieldset class="form-group">
-                    <legend class="border-bottom mb-4">Log in</legend>
+                    <legend class="border-bottom mb-4 LoginTitleFont">Log In</legend>
                     <div class="form-group mb-3">
                         {{ form.email.label(class="form-control-label") }}
                         {{ form.email(class="form-control form-control-lg") }}
@@ -36,7 +36,7 @@
                     </div>
                 </fieldset>
                 <div class="form-group">
-                    {{ form.submit_bn(class="btn btn-outline-info") }}
+                    {{ form.submit_bn(class="btn btn-primary btn-mid w-100 mt-3 loginButton") }}
                 </div>
             </form>
              <div class="mt-3">

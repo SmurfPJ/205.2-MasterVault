@@ -22,7 +22,7 @@
             <form method="POST" action="">
                 {{ form.hidden_tag() }}
                 <fieldset class="form-group">
-                    <legend class="border-bottom mb-4">Signup Now</legend>
+                    <legend class="border-bottom mb-4 titleFontregister">Sign Up Now</legend>
                     <div class="form-group mb-3">
                         {{ form.username.label(class="form-control-label") }}
                         {{ form.username(class="form-control form-control-lg") }}
@@ -56,7 +56,7 @@
                     </div>
                 </fieldset>
                 <div class="form-group">
-                    {{ form.submit_bn(class="btn btn-outline-info") }}
+                    {{ form.submit_bn(class="btn btn-primary w-100 mt-3 registerButton") }}
                 </div>
             </form>
         </div>
