@@ -10,16 +10,60 @@
     height: auto;
 }
 
+.logo-bar {
+    padding: 23px;
+    text-align: left;
+    border-bottom: 2px solid #173356;
+    position: relative; /* For absolute positioning of the logout icon */
+}
+
+.logout-icon {
+    position: absolute;
+    right: 20px; /* Adjust as needed */
+    top: 50%;
+    transform: translateY(-50%); /* Center vertically */
+    font-size: 1.5em; /* Adjust icon size as needed */
+    color: #000; /* Icon color */
+    text-decoration: none; /* Remove underline from anchor tag */
+}
+
+.logout-icon:hover {
+    color: #555; /* Icon hover color */
+}
+
 
 .nav-drawer {
     width: 280px;
     height: 100vh;
     background-color: white;
-    padding-top: 160px;
-    padding-bottom: 20px;
+    padding-top: 20px;
     border-right: 2px solid #173356;
     box-shadow: 10px 0px 0px 0px #738499;
+}
 
+.user-info {
+    padding: 0 15px;
+    margin-bottom: 60px;
+}
+
+.welcome-message {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.email-message {
+    font-size: 0.9em;
+    color: #555;
+}
+
+.nav-drawer ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-drawer li {
+    margin-bottom: 10px;
 }
 
 .nav-drawer a {
@@ -33,26 +77,38 @@
     transition: background-color 0.3s;
 }
 
-.nav-drawer ul {
-    list-style-type: none;  /* Removes the bullets */
-    padding: 15px;
-    margin: 0;  /* Removes default margin */
-}
-
-.nav-drawer li {
-    margin-bottom: 10px;
-}
-
 .nav-drawer a:hover {
-   color: white;
+    color: white;
     background-color: #8b99aa;
 }
+
 
 /*login page*/
 #loginLogo {
     width: 230px;
     height: auto;
 }
+
+.flash-messages-container {
+    position: fixed; /* Fixed position */
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust for the exact center */
+    z-index: 1050; /* Make sure it's above other items */
+    width: auto;
+    max-width: 100%; /* Ensure it doesn't go off the screen */
+}
+
+.alert-dismissible {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+
+.fade-out {
+    opacity: 0 !important;
+}
+
 
 .LoginTitleFont {
 font-family: Inter, sans-serif;

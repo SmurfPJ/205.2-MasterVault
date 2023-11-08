@@ -14,8 +14,8 @@
         <ul class="list-unstyled">
            <li class="mb-4">
                     <div class="d-flex justify-content-between align-items-center">
-                        <span>Logged in as: <strong>Username</strong></span>
-                        <button class="btn btn-secondary btn-sm">LOG OUT</button>
+                        <span>Logged in as: <strong>{{ session['username'] }}</strong></span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm">LOG OUT</a>
                     </div>
             <li class="mb-4 d-flex justify-content-between align-items-center">
                 <span>Two-Step Verification</span>

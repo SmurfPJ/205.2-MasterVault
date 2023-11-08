@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import random
 import string
 from forms import RegistrationForm, LoginForm
@@ -116,16 +116,25 @@ def base():  # put application's code here
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     cform = LoginForm()
-    file = open('loginInfo.csv')
-    type(file)
-    accounts = []
-    csvreader = csv.reader(file)
-    for account in csvreader:
-        if cform.email.data in account and cform.password.data in account:
-            file.close()
-            return redirect(url_for('settings'))
-    file.close()
+    if cform.validate_on_submit():
+        with open('loginInfo.csv', 'r') as file:
+            csvreader = csv.reader(file)
+            for account in csvreader:
+                username, email, _, password = account
+                if cform.email.data == email and cform.password.data == password:
+                    session['username'] = username
+                    session['email'] = email
+                    return redirect(url_for('settings'))
+            flash('Invalid email or password!')
     return render_template("login.html", form=cform)
+
+@app.route('/logout')
+def logout():
+    # Clear the user's session
+    session.clear()
+
+    return redirect(url_for('login'))
+
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -134,7 +143,8 @@ def register():
         with open('loginInfo.csv', 'a', newline='') as file: # Saves data to csv
             writer = csv.writer(file)
             writer.writerow([cform.username.data, cform.email.data, cform.dob.data, cform.password.data])
-        return redirect(url_for('settings')) 
+            flash('Account created successfully!', 'success')
+        return redirect(url_for('login'))
     return render_template("register.html", form=cform)
 
 

@@ -1,3 +1,15 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const alerts = document.querySelectorAll('.alert-dismissible');
+    alerts.forEach(function (alert) {
+        setTimeout(function () {
+            alert.style.opacity = '0';
+            setTimeout(function () {
+                alert.remove();
+            }, 500);
+        }, 3000); // 3s before starting the fade out
+    });
+});
+
 document.addEventListener("DOMContentLoaded", function() {
     const form = document.querySelector("form");
     form.addEventListener("submit", function(event) {
@@ -75,6 +87,7 @@ function toggleMasterPasswordVisibility() {
         togglePasswordIcon.className = 'bi bi-eye';
     }
 }
+
 
 function toggleConfirmMasterPasswordVisibility() {
     const confirmMasterPasswordInput = document.getElementById('confirmMaster_password');
