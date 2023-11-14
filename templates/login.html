@@ -11,6 +11,20 @@
 
 <body class="d-flex align-items-center min-vh-100">
     <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-messages-container">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+
         <div class="text-center mb-4">
             <img src="{{ url_for('static', filename='logos/masterVaultloginLogo.png') }}" alt="Website Logo" class="mb-4" id="loginLogo">
         </div>
@@ -20,15 +34,15 @@
             <form method="POST" action="">
                 {{ form.hidden_tag() }}
                 <fieldset class="form-group">
-                    <legend class="border-bottom mb-4">Log in</legend>
+                    <legend class="border-bottom mb-4 LoginTitleFont">Log In</legend>
                     <div class="form-group mb-3">
                         {{ form.email.label(class="form-control-label") }}
-                        {{ form.email(class="form-control form-control-lg") }}
+                        {{ form.email(class="form-control form-control-md ") }}
                     </div>
                     <div class="form-group mb-3">
-                        {{ form.password.label(class="form-control-label") }}
+                        {{ form.password.label(class="form-control-label ") }}
                         <div class="d-flex align-items-center">
-                            {{ form.password(class="form-control form-control-lg me-2", id="password") }}
+                            {{ form.password(class="form-control form-control-md me-2", id="password") }}
                             <button type="button" class="btn btn-outline-secondary" id="togglePassword" onclick="togglePasswordVisibility()" tabindex="-1">
                                 <i class="bi bi-eye" id="togglePasswordIcon"></i>
                             </button>
@@ -36,7 +50,7 @@
                     </div>
                 </fieldset>
                 <div class="form-group">
-                    {{ form.submit_bn(class="btn btn-outline-info") }}
+                    {{ form.submit_bn(class="btn btn-primary btn-mid w-100 mt-3 loginButton") }}
                 </div>
             </form>
              <div class="mt-3">

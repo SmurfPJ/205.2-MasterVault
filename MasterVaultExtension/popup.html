@@ -11,48 +11,68 @@
 
 <body class="PopupExtension">
 <div class="container mt-2">
-       <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center">
         <img src="images/BrowserExtensionLogo.png" alt="Logo" width="30" height="30" class="me-2">
         <h5 class="LogoFont mb-2">MASTERVAULT</h5>
-       </div>
-
-    <div class="mb-2 mt-2">
-        <label for="keyword-input" class="form-label">Keyword:</label>
-        <input type="text" id="keyword-input" class="form-control">
     </div>
 
-    <div class="mb-2">
-        <label for="length-input" class="form-label">Length:</label>
-        <input type="number" id="length-input" class="form-control" min="8" max="30" value="10">
+    <!-- Login Form -->
+    <div id="loginForm" class="mb-3">
+        <h2 class="loginFont">Login</h2>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email address:</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter email">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input type="password" class="form-control" id="password" placeholder="Password">
+        </div>
+        <button id="loginBtn" class="btn btn-primary">Login</button>
+        <p id="loginError" class="text-danger mt-2"></p>
+        <p>New? <a href="http://127.0.0.1:5000/register" class="registerPasswordlink" id="registerLink">Create an account</a></p>
     </div>
 
-    <div class="form-check form-switch mb-2">
-        <input class="form-check-input" type="checkbox" id="numbers">
-        <label class="form-check-label" for="numbers">Include Numbers</label>
+    <!-- Password Generator (hidden initially) -->
+    <div id="passwordGenerator" style="display:none;">
+    <!-- Username Display -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <span id="loggedInAs" class="text-muted"></span>
     </div>
-
-    <div class="form-check form-switch mb-2">
-        <input class="form-check-input" type="checkbox" id="symbols">
-        <label class="form-check-label" for="symbols">Include Symbols</label>
-    </div>
-
-    <button id="generate-btn" class="btn btn-primary mb-2">
-        <i class="bi bi-shield-lock-fill"></i> Generate
-    </button>
-
-    <div class="input-group mb-2">
-        <input type="text" id="generated-password" class="form-control">
-        <button id="copy-btn" class="btn btn-outline-secondary" type="button">
-            <i class="bi bi-clipboard"></i>
+        <div class="mb-2">
+            <label for="keyword-input" class="form-label">Keyword:</label>
+            <input type="text" id="keyword-input" class="form-control">
+        </div>
+        <div class="mb-2">
+            <label for="length-input" class="form-label">Length:</label>
+            <input type="number" id="length-input" class="form-control" min="8" max="30" value="10">
+        </div>
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" type="checkbox" id="numbers">
+            <label class="form-check-label" for="numbers">Include Numbers</label>
+        </div>
+        <div class="form-check form-switch mb-2">
+            <input class="form-check-input" type="checkbox" id="symbols">
+            <label class="form-check-label" for="symbols">Include Symbols</label>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+        <button id="generate-btn" class="btn btn-primary mb-2">
+            <i class="bi bi-shield-lock-fill"></i> Generate
         </button>
-    </div>
-
-    <div id="strength-indicator" class="mb-2">
-        <!-- Password strength will be displayed here -->
+        <button id="logoutBtn" class="btn btn-warning mb-2 ">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+        </div>
+        <div class="input-group mb-2">
+            <input type="text" id="generated-password" class="form-control">
+            <button id="copy-btn" class="btn btn-outline-secondary" type="button">
+                <i class="bi bi-clipboard"></i>
+            </button>
+        </div>
+        <div id="strength-indicator" class="mb-2">
+            <!-- Password strength will be displayed here -->
+        </div>
     </div>
 </div>
-
-
 
 <script src="bootstrap.min.js"></script>
 <script src="popup.js"></script>

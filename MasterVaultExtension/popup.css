@@ -9,3 +9,14 @@
     color: #173356;
     font-size: 20px;
 }
+
+.loginFont {
+    font-family: Inter, sans-serif;
+    font-weight: bold;
+    color: #173356;
+    font-size: 23px;
+}
+
+#loggedInAs {
+    font-size: 0.9em;
+}
