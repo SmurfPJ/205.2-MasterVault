@@ -1,15 +1,37 @@
 from flask import Flask, render_template, request, redirect, url_for
 import random
 import string
-from forms import  RegistrationForm, LoginForm
+from forms import RegistrationForm, LoginForm
 import csv
 
+# Constants
+ACCOUNT_METADATA_LENGTH = 4
+
 #Database paths
-writeToLogin = open('loginInfo', 'w')
+writeToLogin = open('userData', 'w')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '47a9cee106fa8c2c913dd385c2be207d'
 
+# Gets all passwords associated with a given user
+def get_passwords(user):
+    # Open csv file
+    file = open('userData.csv')
+    type(file)
+    csvreader = csv.reader(file)
+    for csvAccount in csvreader: # Reads each account in csv
+        if user == csvAccount[0]: # Checks if account matches user
+            userAccounts = []
+            # Splits account data into lists of size 3 (In pattern [website, email, password])
+            for accountDataIdx in range(len(csvAccount) - ACCOUNT_METADATA_LENGTH):
+                dataChunk = csvAccount[accountDataIdx + ACCOUNT_METADATA_LENGTH]
+                if accountDataIdx % 3 == 0:
+                    userAccounts.append([])
+                userAccounts[-1].append(dataChunk)
+            
+            userAccounts.sort(key=lambda x: x[0]) # Sorts data alphabetically by website
+            return userAccounts
+    return []
 
 def generate_password(keyword, length, use_numbers, use_symbols):
     characters = string.ascii_letters  # Always use letters
@@ -116,7 +138,7 @@ def base():  # put application's code here
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     cform = LoginForm()
-    file = open('loginInfo.csv')
+    file = open('userData.csv')
     type(file)
     accounts = []
     csvreader = csv.reader(file)
@@ -125,30 +147,35 @@ def login():
             file.close()
             return redirect(url_for('settings'))
     file.close()
-    return render_template("login.html",form = cform)
+    return render_template("login.html", form=cform)
 
 @app.route('/register', methods=['GET','POST'])
 def register():
     cform = RegistrationForm()
     if cform.validate_on_submit(): # Checks if all data is valid
-        with open('loginInfo.csv', 'a', newline='') as file: # Saves data to csv
+        with open('userData.csv', 'a', newline='') as file: # Saves data to csv
             writer = csv.writer(file)
             writer.writerow([cform.username.data, cform.email.data, cform.dob.data, cform.password.data])
-        # Goes to home page (Settings for now)
         return redirect(url_for('settings')) 
-    
     return render_template("register.html",form = cform)
+
 
 @app.route('/master_password_setup', methods=['GET', 'POST'])
 def master_password():
-
     return render_template('masterPassword.html')
+
+@app.route('/passwordList', methods=['GET', 'POST'])
+def passwordList():
+    user_passwords = get_passwords('example')
+    return render_template('passwordList.html', passwords=user_passwords)
+
+@app.route('/passwordView/<website>/<email>/<password>', methods=['GET', 'POST'])
+def passwordView(website, email, password):
+    return render_template('passwordView.html', website=website, email=email, password=password)
 
 @app.route('/settings', methods=['GET'])
 def settings():
     return render_template('settings.html')
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
