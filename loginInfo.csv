@@ -1,4 +1,4 @@
-Username,Email,DOB,Password
+Username,Email,DOB,Password,2FA
 example,example@email.com,2004-02-17,example
-peterlee,peter@hotmail.com,1999-04-23,1234567
-johnsnow,john@gmail.com,1943-08-23,kuUiIgnN+g
+nickichoo,nicki9656@gmail.com,1999-06-13,9289,Enabled
+peter,peter@hotmail.com,2004-02-17,1234567,

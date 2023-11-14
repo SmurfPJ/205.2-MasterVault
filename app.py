@@ -1,14 +1,28 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-import random
-import string
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+import random, string, csv, os, datetime
 from forms import RegistrationForm, LoginForm
-import csv
+from flask_mail import Mail, Message
+from dotenv import load_dotenv
+
+
 
 #Database paths
 writeToLogin = open('loginInfo', 'w')
 
 app = Flask(__name__)
+mail= Mail(app)
+load_dotenv()
+
+
 app.config['SECRET_KEY'] = '47a9cee106fa8c2c913dd385c2be207d'
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'nickidummyacc@gmail.com'
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USE_TLS'] = False
+mail = Mail(app)
+
 
 
 def generate_password(keyword, length, use_numbers, use_symbols):
@@ -115,18 +129,57 @@ def base():  # put application's code here
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    cform = LoginForm()
-    if cform.validate_on_submit():
-        with open('loginInfo.csv', 'r') as file:
-            csvreader = csv.reader(file)
-            for account in csvreader:
-                username, email, _, password = account
-                if cform.email.data == email and cform.password.data == password:
-                    session['username'] = username
-                    session['email'] = email
-                    return redirect(url_for('settings'))
-            flash('Invalid email or password!')
-    return render_template("login.html", form=cform)
+    if request.method == 'POST':
+        # Initialize email and password variables
+        email = None
+        password = None
+
+        # Check if the request is JSON (from the extension)
+        if request.is_json:
+            data = request.get_json()
+            email = data.get('email')
+            password = data.get('password')
+        else:
+            # Handle form submission (from the web app)
+            cform = LoginForm()
+            if cform.validate_on_submit():
+                email = cform.email.data
+                password = cform.password.data
+            else:
+                return render_template("login.html", form=cform)
+
+        # Ensure that email and password are not None
+        if email is not None and password is not None:
+            # Common login logic for both extension and web app
+            with open('loginInfo.csv', 'r') as file:
+                csvreader = csv.reader(file)
+                for account in csvreader:
+                    # Pad the account list to ensure it has at least 5 elements
+                    padded_account = account + [None] * (5 - len(account))
+
+                    username, account_email, dob, account_password, _ = padded_account
+
+                    if email == account_email and password == account_password:
+                        if request.is_json:
+                            # JSON response for the extension
+                            return jsonify({"status": "success", "username": username, "email": email})
+                        else:
+                            # Handle session and redirect for web app
+                            session['username'] = username
+                            session['email'] = email
+                            return redirect(url_for('settings'))
+
+        # Handle invalid email or password
+        error_message = "Invalid email or password"
+        if request.is_json:
+            return jsonify({"status": "failure", "message": error_message}), 401
+        else:
+            flash(error_message)
+            return render_template("login.html", form=cform)
+
+    return render_template("login.html", form=LoginForm())
+
+
 
 @app.route('/logout')
 def logout():
@@ -135,16 +188,35 @@ def logout():
 
     return redirect(url_for('login'))
 
+def send_2fa_verification_email(email, pin):
+    msg = Message("Your MasterVault 2FA PIN",
+                  sender='nickidummyacc@gmail.com',
+                  recipients=[email])
+    msg.body = f'Your 2FA verification PIN is: {pin}'
+    mail.send(msg)
 
-@app.route('/register', methods=['GET','POST'])
+def send_verification_email(email):
+    msg = Message("Welcome to MasterVault",
+                  sender='nickidummyacc@gmail.com',
+                  recipients=[email])
+    msg.body = 'Hello, your account has been registered successfully! Thank you for using MasterVault. (This is a test program for a college project)'
+    mail.send(msg)
+
+
+
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     cform = RegistrationForm()
-    if cform.validate_on_submit(): # Checks if all data is valid
-        with open('loginInfo.csv', 'a', newline='') as file: # Saves data to csv
+    if cform.validate_on_submit():
+        with open('loginInfo.csv', 'a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([cform.username.data, cform.email.data, cform.dob.data, cform.password.data])
-            flash('Account created successfully!', 'success')
-        return redirect(url_for('login'))
+
+            # Send verification email after successfully saving account details
+            send_verification_email(cform.email.data)
+
+            flash('Account created successfully! An email will be sent to you .', 'success')
+            return redirect(url_for('login'))
     return render_template("register.html", form=cform)
 
 
@@ -157,6 +229,117 @@ def master_password():
 def settings():
     return render_template('settings.html')
 
+# Temporary storage for 2FA codes
+temporary_2fa_storage = {}
+
+@app.route('/enable_2fa', methods=['POST'])
+def enable_2fa():
+    user_email = request.json.get('email')
+    update_2fa_status(user_email, True)
+    return jsonify({'message': '2FA has been enabled'}), 200
+
+@app.route('/disable_2fa', methods=['POST'])
+def disable_2fa():
+    user_email = request.json.get('email')
+    update_2fa_status(user_email, False)
+    return jsonify({'message': '2FA has been disabled'}), 200
+
+def update_2fa_status(email, status):
+    updated = False
+    data = []
+    status_string = 'Enabled' if status else 'Disabled'
+
+    with open('loginInfo.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row and row[1] == email:
+                if len(row) >= 5:  # Check if the 2FA status column exists
+                    row[4] = status_string  # Update the 2FA status
+                else:
+                    row.append(status_string)  # Append the 2FA status
+                updated = True
+            data.append(row)
+
+    if updated:
+        with open('loginInfo.csv', 'w', newline='') as file:
+            csvwriter = csv.writer(file)
+            csvwriter.writerows(data)
+
+    return updated
+
+@app.route('/get_2fa_status')
+def get_2fa_status():
+    if 'username' in session:
+        user = get_user_by_username(session['username'])
+
+        two_fa_status = user['2fa_enabled'] == 'Enabled'
+        return jsonify({'2fa_enabled': two_fa_status})
+    else:
+        return jsonify({'error': 'User not logged in'}), 401
+
+def get_user_by_username(username):
+    with open('loginInfo.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row and row[0] == username:
+                # Convert row to dict
+                user = {
+                    'username': row[0],
+                    'email': row[1],
+                    'dob': row[2],
+                    'password': row[3],
+                    '2fa_enabled': row[4] if len(row) > 4 else 'Disabled'
+                }
+                return user
+
+
+@app.route('/setup_2fa', methods=['POST'])
+def setup_2fa():
+    user_email = request.json.get('email')
+    pin = random.randint(1000, 9999)
+    send_2fa_verification_email(user_email, pin)
+    store_pin(user_email, pin)
+    return jsonify({'message': 'A 2FA PIN has been sent to your email'}), 200
+
+@app.route('/verify_2fa', methods=['POST'])
+def verify_2fa():
+    data = request.get_json()
+    print("Received data:", data)  # Log received data
+
+    if not data or 'email' not in data or 'pin' not in data:
+        return jsonify({'message': 'Email and PIN are required'}), 400
+
+    user_email = data['email']
+    entered_pin = data['pin']
+    print("Email:", user_email, "Entered PIN:", entered_pin)  # Log specifics
+
+    if is_valid_pin(user_email, entered_pin):
+        return jsonify({'message': '2FA verification successful!'}), 200
+    else:
+        return jsonify({'message': 'Invalid or expired PIN'}), 400
+
+
+def send_2fa_verification_email(email, pin):
+    msg = Message("Your MasterVault 2FA PIN",
+                  sender='nickidummyacc@gmail.com',
+                  recipients=[email])
+    msg.body = f'Your 2FA verification PIN is: {pin}, Please note this code is only valid for 10 minutes.'
+    mail.send(msg)
+
+def store_pin(email, pin):
+    temporary_2fa_storage[email] = {
+        'pin': pin, 'timestamp': datetime.datetime.now()
+    }
+
+def is_valid_pin(email, entered_pin):
+    pin_data = temporary_2fa_storage.get(email)
+    print("Stored PIN data for", email, ":", pin_data)  # Log stored PIN data
+
+    if pin_data and str(pin_data['pin']) == str(entered_pin):
+        time_diff = datetime.datetime.now() - pin_data['timestamp']
+        if time_diff.total_seconds() <= 600:  # 10 minutes validity
+            return True
+    return False
 
 if __name__ == '__main__':
     app.run(debug=True)

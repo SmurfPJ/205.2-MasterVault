@@ -1,3 +1,130 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const twoStepVerificationCheckbox = document.getElementById('twoStepVerification');
+    const twoStepVerificationInput = document.getElementById('twoStepVerificationInput');
+    const verifyPinBtn = document.getElementById('verifyPinBtn');
+    const feedbackElement = document.getElementById('twoStepFeedback');
+    const userEmailElement = document.getElementById('userEmail');
+    const userEmail = userEmailElement ? userEmailElement.textContent : '';
+
+    // Update the 2FA toggle state based on server response
+    update2FAToggle();
+
+
+    twoStepVerificationCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            enable2FAandRequestPIN(userEmail, feedbackElement, twoStepVerificationInput);
+        } else {
+            disable2FA(userEmail, feedbackElement, twoStepVerificationInput);
+        }
+    });
+
+    verifyPinBtn.addEventListener('click', function() {
+        verifyPIN(userEmail, feedbackElement, twoStepVerificationInput);
+    });
+});
+
+
+function enable2FAandRequestPIN(userEmail, feedbackElement, twoStepVerificationInput) {
+    fetch('/enable_2fa', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email: userEmail })
+    })
+    .then(response => response.json())
+    .then(data => {
+        feedbackElement.innerText = data.message;
+        requestPIN(userEmail, feedbackElement, twoStepVerificationInput);
+    })
+    .catch(error => {
+        feedbackElement.innerText = 'Error: ' + error.message;
+    });
+}
+
+function disable2FA(userEmail, feedbackElement, twoStepVerificationInput) {
+    fetch('/disable_2fa', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email: userEmail })
+    })
+    .then(response => response.json())
+    .then(data => {
+        displayMessageAndHide(feedbackElement, data.message);
+        twoStepVerificationInput.style.display = 'none';
+    })
+    .catch(error => {
+        displayMessageAndHide(feedbackElement, 'Error: ' + error.message);
+    });
+}
+
+function requestPIN(userEmail, feedbackElement, twoStepVerificationInput) {
+    fetch('/setup_2fa', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email: userEmail })
+    })
+    .then(response => response.json())
+    .then(data => {
+        feedbackElement.innerText = data.message;
+        twoStepVerificationInput.style.display = 'block';
+    })
+    .catch(error => {
+        feedbackElement.innerText = 'Error: ' + error.message;
+        twoStepVerificationInput.style.display = 'none';
+    });
+}
+
+function verifyPIN(userEmail, feedbackElement, twoStepVerificationInput) {
+    const pin = document.getElementById('twoStepPin').value;
+    const verifyPinBtn = document.getElementById('verifyPinBtn'); // Get the verify button
+    if (!pin || pin.length !== 4) {
+        displayMessageAndHide(feedbackElement, 'Please enter a valid 4-digit PIN.');
+        return;
+    }
+
+    fetch('/verify_2fa', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email: userEmail, pin: pin })
+    })
+    .then(response => response.json())
+    .then(data => {
+        displayMessageAndHide(feedbackElement, data.message);
+        if (data.message === '2FA verification successful!') {
+            // Hide the PIN input, verify button, and their container upon successful verification
+            document.getElementById('twoStepPin').style.display = 'none';
+            verifyPinBtn.style.display = 'none';
+            twoStepVerificationInput.style.display = 'none';
+        }
+    })
+    .catch(error => {
+        displayMessageAndHide(feedbackElement, 'Error verifying PIN: ' + error.message);
+    });
+}
+
+
+function displayMessageAndHide(feedbackElement, message, delay = 3500) {
+    feedbackElement.innerText = message;
+    setTimeout(() => {
+        feedbackElement.innerText = '';
+    }, delay);
+}
+
+function update2FAToggle() {
+    fetch('/get_2fa_status')
+    .then(response => response.json())
+    .then(data => {
+        if (data['2fa_enabled'] !== undefined) {
+            document.getElementById('twoStepVerification').checked = data['2fa_enabled'];
+        }
+    })
+    .catch(error => console.error('Error fetching 2FA status:', error));
+}
+
+
+
+
+
+
 document.addEventListener('DOMContentLoaded', function () {
     const alerts = document.querySelectorAll('.alert-dismissible');
     alerts.forEach(function (alert) {

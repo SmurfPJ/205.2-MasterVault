@@ -14,32 +14,43 @@
     padding: 23px;
     text-align: left;
     border-bottom: 2px solid #173356;
-    position: relative; /* For absolute positioning of the logout icon */
+    position: relative;
 }
 
 .logout-icon {
     position: absolute;
-    right: 20px; /* Adjust as needed */
+    right: 20px;
     top: 50%;
-    transform: translateY(-50%); /* Center vertically */
-    font-size: 1.5em; /* Adjust icon size as needed */
-    color: #000; /* Icon color */
-    text-decoration: none; /* Remove underline from anchor tag */
+    transform: translateY(-50%);
+    font-size: 1.5em;
+    color: #000;
+    text-decoration: none;
 }
 
 .logout-icon:hover {
-    color: #555; /* Icon hover color */
+    color: #173356;
+}
+
+.main-container {
+    display: flex;
+    min-height: 100vh;
 }
 
 
 .nav-drawer {
+    flex-shrink: 0;
     width: 280px;
-    height: 100vh;
     background-color: white;
     padding-top: 20px;
     border-right: 2px solid #173356;
     box-shadow: 10px 0px 0px 0px #738499;
 }
+
+.navFont {
+font-family: Inter, sans-serif;
+    color: #173356
+}
+
 
 .user-info {
     padding: 0 15px;
@@ -90,13 +101,13 @@
 }
 
 .flash-messages-container {
-    position: fixed; /* Fixed position */
-    top: 50%; /* Center vertically */
-    left: 50%; /* Center horizontally */
-    transform: translate(-50%, -50%); /* Adjust for the exact center */
-    z-index: 1050; /* Make sure it's above other items */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050;
     width: auto;
-    max-width: 100%; /* Ensure it doesn't go off the screen */
+    max-width: 100%;
 }
 
 .alert-dismissible {
@@ -261,6 +272,17 @@ input[type=range] {
     margin-left: 300px;
 }
 
+.settingFont {
+ font-family: Inter, sans-serif;
+    font-weight: bold;
+    color: #173356
+}
+
+.section-title {
+font-family: Inter, sans-serif;
+    color: #173356
+}
+
 .lockSlider{
     margin-right: 500px;
 }
@@ -277,6 +299,12 @@ input[type=range] {
 .password-container {
  padding-left: 350px;
     margin-top: -750px;
+}
+
+.passwordGeneratortitleFont {
+font-family: Inter, sans-serif;
+    color: #173356;
+    font-weight: bold;
 }
 
 .refreshButton {
