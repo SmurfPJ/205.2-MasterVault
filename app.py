@@ -210,7 +210,12 @@ def register():
     if cform.validate_on_submit():
         with open('loginInfo.csv', 'a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([cform.username.data, cform.email.data, cform.dob.data, cform.password.data])
+            writer.writerow([
+                cform.username.data,
+                cform.email.data,
+                cform.dob.data,
+                cform.password.data,
+                'empty']) # Default 2FA status
 
             # Send verification email after successfully saving account details
             send_verification_email(cform.email.data)
@@ -266,6 +271,8 @@ def update_2fa_status(email, status):
             csvwriter.writerows(data)
 
     return updated
+
+
 
 @app.route('/get_2fa_status')
 def get_2fa_status():
