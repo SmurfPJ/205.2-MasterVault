@@ -324,7 +324,10 @@ def verify_2fa():
         return jsonify({'message': '2FA verification successful!'}), 200
     else:
         return jsonify({'message': 'Invalid or expired PIN'}), 400
-
+    
+@app.route('/passwordList', methods=['GET'])
+def passwordList():
+    return render_template('passwordList.html')
 
 def send_2fa_verification_email(email, pin):
     msg = Message("Your MasterVault 2FA PIN",
