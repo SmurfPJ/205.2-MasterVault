@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import random, string, csv, os, datetime
-from forms import RegistrationForm, LoginForm
+from forms import RegistrationForm, LoginForm, ResetPasswordForm
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
+from encryption import encrypt, decrypt
 
+#Constants
+ACCOUNT_METADATA_LENGTH = 6
 
 
 
@@ -54,6 +57,25 @@ def generate_password(keyword, length, use_numbers, use_symbols):
 
     return password
 
+
+def get_passwords(user):
+    # Open csv file
+    file = open('loginInfo.csv')
+    type(file)
+    csvreader = csv.reader(file)
+    for csvAccount in csvreader: # Reads each account in csv
+        if user == csvAccount[0]: # Checks if account matches user
+            userAccounts = []
+            # Splits account data into lists of size 3 (In pattern [website, email, password])
+            for accountDataIdx in range(len(csvAccount) - ACCOUNT_METADATA_LENGTH):
+                dataChunk = csvAccount[accountDataIdx + ACCOUNT_METADATA_LENGTH]
+                if accountDataIdx % (ACCOUNT_METADATA_LENGTH) == 0:
+                    userAccounts.append([])
+                userAccounts[-1].append(dataChunk)
+            
+            userAccounts.sort(key=lambda x: x[0]) # Sorts data alphabetically by website
+            return userAccounts
+    return []
 
 
 def check_password_strength(password):
@@ -246,15 +268,37 @@ def master_password():
 
     return render_template('masterPassword.html')
 
+@app.route('/resetPassword', methods=['GET', 'POST'])
+def resetPassword():
+    return render_template('resetPassword.html')
 def save_master_password(email, master_password):
     data = []
     updated = False
+@app.route('/passwordList', methods=['GET'])
+def passwordList():
+    # Check if the user is logged in
+    if 'username' in session:
+        # Get the username from the session
+        username = session['username']
 
     with open('loginInfo.csv', 'r', newline='') as file:
         csvreader = csv.reader(file)
         for row in csvreader:
             if row and row[1] == email:
                 # Update the row with the new master password
+        # Call the get_passwords function to retrieve the passwords associated with the user
+        user_passwords = get_passwords(username)
+
+        # Render an HTML table to display the passwords
+        return render_template('passwordList.html', passwords=user_passwords)
+    else:
+        # Redirect to the login page if the user is not logged in
+        flash('Please log in to access your passwords.', 'warning')
+        return redirect(url_for('login'))
+
+@app.route('/passwordView/<website>/<email>/<password>', methods=['GET', 'POST'])
+def passwordView(website, email, password):
+    return render_template('passwordView.html', website=website, email=email, password=password)
 
                 if len(row) < 6:
                     row.append(master_password)

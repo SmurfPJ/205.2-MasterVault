@@ -1,5 +1,5 @@
-Username,Email,DOB,Password,2FA,MasterPassword
-example,example@email.com,2004-02-17,example
+Username,Email,DOB,Password,2FA,MasterPassword,websiteA,emailA,passwordA,websiteB,emailB,passwordB
+example,example@email.com,2004-02-17,example,Enabled,MasterPassword,websiteA, emailA, passwordA, websiteB, emailB, passwordB
 nickichoo,nicki9656@gmail.com,1999-06-13,9289,Enabled
-johnsnow,john@gmail.com,1933-09-02,12121,Disabled
-peterlee,peter@hotmail.com,1980-07-14,1234,empty,8888
+peter,peter@hotmail.com,2004-02-17,1234567,Enabled
+steve,steve@email.com,2000-01-01,steve, Enabled

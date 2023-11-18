@@ -14,3 +14,9 @@ class LoginForm(FlaskForm):
     email = StringField('Email',validators=[DataRequired(),Email()])
     password = PasswordField('Password',validators=[DataRequired()])
     submit_bn = SubmitField('Log in')
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Password',validators=[DataRequired()])
+    resetPassword = PasswordField('Password',validators=[DataRequired()])
+    confirmResetPassword = PasswordField('Confirm password',validators=[DataRequired(),EqualTo('password')])
+    submit_bn = SubmitField('ConfirmPassword')
