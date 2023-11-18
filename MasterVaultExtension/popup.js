@@ -32,12 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-    // Handle login
-    document.getElementById('loginBtn').addEventListener('click', function() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+     // Handle login
+document.getElementById('loginBtn').addEventListener('click', function() {
+const email = document.getElementById('email').value;
+const password = document.getElementById('password').value;
 
-    fetch('http://127.0.0.1:5000/login', {
+fetch('http://127.0.0.1:5000/login', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ email: email, password: password })
@@ -57,9 +57,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-    // Handle logout
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-        chrome.storage.local.remove('userSession', function() {
+// Handle logout
+document.getElementById('logoutBtn').addEventListener('click', function() {
+     chrome.storage.local.remove('userSession', function() {
             // User session cleared, switch back to login view
             document.getElementById('passwordGenerator').style.display = 'none';
             document.getElementById('loginForm').style.display = 'block';

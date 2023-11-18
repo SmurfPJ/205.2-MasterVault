@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 
 
 
+
+
 #Database paths
 writeToLogin = open('loginInfo', 'w')
 
@@ -150,24 +152,27 @@ def login():
 
         # Ensure that email and password are not None
         if email is not None and password is not None:
-            # Common login logic for both extension and web app
             with open('loginInfo.csv', 'r') as file:
                 csvreader = csv.reader(file)
                 for account in csvreader:
-                    # Pad the account list to ensure it has at least 5 elements
-                    padded_account = account + [None] * (5 - len(account))
-
-                    username, account_email, dob, account_password, _ = padded_account
+                    # Ensure account has enough fields
+                    padded_account = account + [None] * (6 - len(account))
+                    username, account_email, dob, account_password, _2fa_status, master_password_set = padded_account
 
                     if email == account_email and password == account_password:
                         if request.is_json:
                             # JSON response for the extension
                             return jsonify({"status": "success", "username": username, "email": email})
                         else:
-                            # Handle session and redirect for web app
+                            # Handle session for web app
                             session['username'] = username
                             session['email'] = email
-                            return redirect(url_for('settings'))
+
+                            # Redirect based on master password setup
+                            if master_password_set != 'True':
+                                return redirect(url_for('master_password'))
+                            else:
+                                return redirect(url_for('settings'))
 
         # Handle invalid email or password
         error_message = "Invalid email or password"
@@ -220,14 +225,49 @@ def register():
             # Send verification email after successfully saving account details
             send_verification_email(cform.email.data)
 
-            flash('Account created successfully! An email will be sent to you .', 'success')
+            flash('Account created successfully! An email will be sent to you.', 'success')
             return redirect(url_for('login'))
     return render_template("register.html", form=cform)
 
 
-@app.route('/master_password_setup', methods=['GET', 'POST'])
+@app.route('/master_password', methods=['GET', 'POST'])
 def master_password():
+    if request.method == 'POST':
+        master_password = request.form['master_password']
+        email = session['email']
+
+        # Save the master password to the user's account
+        save_master_password(email, master_password)
+
+        # Flash a success message
+        flash('Master password set up successfully!', 'success')
+
+        return redirect(url_for('passwordList'))
+
     return render_template('masterPassword.html')
+
+def save_master_password(email, master_password):
+    data = []
+    updated = False
+
+    with open('loginInfo.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row and row[1] == email:
+                # Update the row with the new master password
+
+                if len(row) < 6:
+                    row.append(master_password)
+                else:
+                    row[5] = master_password
+                updated = True
+            data.append(row)
+
+    if updated:
+        with open('loginInfo.csv', 'w', newline='') as file:
+            csvwriter = csv.writer(file)
+            csvwriter.writerows(data)
+
 
 
 @app.route('/settings', methods=['GET'])
@@ -271,7 +311,6 @@ def update_2fa_status(email, status):
             csvwriter.writerows(data)
 
     return updated
-
 
 
 @app.route('/get_2fa_status')
@@ -350,6 +389,42 @@ def is_valid_pin(email, entered_pin):
         if time_diff.total_seconds() <= 600:  # 10 minutes validity
             return True
     return False
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    # Check if the user is authenticated
+    if 'email' not in session:
+        return jsonify({"success": False, "message": "User not logged in."}), 401
+
+    email = session['email']
+
+    # Initialize variables
+    data = []
+    account_deleted = False
+
+    with open('loginInfo.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row[1] != email:
+                data.append(row)
+            else:
+                account_deleted = True
+
+        # Write the updated data back to the CSV file
+    if account_deleted:
+        with open('loginInfo.csv', 'w', newline='') as file:
+            csvwriter = csv.writer(file)
+            csvwriter.writerows(data)
+
+        # Clear the user's session and log them out
+        session.pop('email', None)
+        session.pop('username', None)
+
+        return jsonify({"success": True, "message": "Account successfully deleted."})
+    else:
+        return jsonify({"success": False, "message": "Account not found."})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
