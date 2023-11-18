@@ -1,6 +1,71 @@
 // Check if we're in the context of the browser extension
 var isExtensionContext = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id;
 
+chrome.storage.onChanged.addListener(function(changes, namespace) {
+    for (var key in changes) {
+        var storageChange = changes[key];
+        if (key === 'userSession' && namespace === 'local') {
+            // Check if the user is logged in
+            if (storageChange.newValue && storageChange.newValue.status === 'success') {
+                // User is logged in, update UI accordingly
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('passwordGenerator').style.display = 'block';
+                document.getElementById('loggedInAs').innerHTML = 'Logged in as <strong>' + storageChange.newValue.username + '</strong>';
+            } else {
+                // No user session, show login form
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('passwordGenerator').style.display = 'none';
+            }
+        }
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var registerLink = document.getElementById('registerLink');
+    if (registerLink) {
+        registerLink.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent the default link behavior
+            var url = this.href;
+            chrome.tabs.create({ url: url }); // Open the link in a new tab
+        });
+    }
+
+});
+
+    // Handle login
+    document.getElementById('loginBtn').addEventListener('click', function() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    fetch('http://127.0.0.1:5000/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email: email, password: password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            chrome.storage.local.set({ 'userSession': data });
+            // No need to manually update the UI here
+        } else {
+            document.getElementById('loginError').innerText = data.message;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+
+
+    // Handle logout
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        chrome.storage.local.remove('userSession', function() {
+            // User session cleared, switch back to login view
+            document.getElementById('passwordGenerator').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        });
+    });
+
 document.addEventListener("DOMContentLoaded", function() {
     // Elements
     var keywordInput = document.getElementById('keyword-input');
