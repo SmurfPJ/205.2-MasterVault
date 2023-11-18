@@ -1,3 +1,25 @@
+//Delete Account
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('deleteAccountBtn').addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+            fetch('http://127.0.0.1:5000/delete_account', {
+                method: 'POST',
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.success) {
+                    window.location.href = '/login';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+});
+
+
+
+//2FA Authentications
 document.addEventListener('DOMContentLoaded', function() {
     const twoStepVerificationCheckbox = document.getElementById('twoStepVerification');
     const twoStepVerificationInput = document.getElementById('twoStepVerificationInput');
@@ -349,3 +371,4 @@ function copyToClipboard() {
         document.getElementById('clipboard-icon').className = 'bi bi-clipboard';
     }, 2000); //2 seconds
 }
+
