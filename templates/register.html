@@ -38,7 +38,7 @@
                     <div class="form-group mb-3">
                         {{ form.password.label(class="form-control-label") }}
                         <div class="d-flex align-items-center">
-                            {{ form.password(class="form-control form-control-md me-2", id="password") }}
+                            {{ form.password(class="form-control form-control-md me-2", id="password", oninput="checkPasswordMatch()")}}
                             <button type="button" class="btn btn-outline-secondary" id="togglePassword" onclick="togglePasswordVisibility()" tabindex="-1">
                                 <i class="bi bi-eye" id="togglePasswordIcon"></i>
                             </button>
@@ -47,7 +47,7 @@
                     <div class="form-group mb-3">
                         {{ form.confirm_password.label(class="form-control-label") }}
                         <div class="d-flex align-items-center">
-                            {{ form.confirm_password(class="form-control form-control-md me-2", id="confirm_password") }}
+                            {{ form.confirm_password(class="form-control form-control-md me-2", id="confirm_password", oninput="checkPasswordMatch()")}}
                             <button type="button" class="btn btn-outline-secondary" id="toggleConfirmPassword" onclick="toggleConfirmPasswordVisibility()" tabindex="-1">
                                 <i class="bi bi-eye" id="toggleConfirmPasswordIcon"></i>
                             </button>
@@ -66,7 +66,7 @@
 </body>
 
 
-                    <!-- Old Form
+                    <!-- Old Form --!
                     <form action="/register" method="post">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email address</label>

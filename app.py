@@ -8,6 +8,9 @@ from encryption import encrypt, decrypt
 #Constants
 ACCOUNT_METADATA_LENGTH = 6
 
+
+
+
 #Database paths
 writeToLogin = open('loginInfo', 'w')
 
@@ -171,24 +174,27 @@ def login():
 
         # Ensure that email and password are not None
         if email is not None and password is not None:
-            # Common login logic for both extension and web app
             with open('loginInfo.csv', 'r') as file:
                 csvreader = csv.reader(file)
                 for account in csvreader:
-                    # Pad the account list to ensure it has at least 5 elements
-                    padded_account = account + [None] * (5 - len(account))
-
-                    username, account_email, dob, account_password, _ = padded_account
+                    # Ensure account has enough fields
+                    padded_account = account + [None] * (6 - len(account))
+                    username, account_email, dob, account_password, _2fa_status, master_password_set = padded_account
 
                     if email == account_email and password == account_password:
                         if request.is_json:
                             # JSON response for the extension
                             return jsonify({"status": "success", "username": username, "email": email})
                         else:
-                            # Handle session and redirect for web app
+                            # Handle session for web app
                             session['username'] = username
                             session['email'] = email
-                            return redirect(url_for('settings'))
+
+                            # Redirect based on master password setup
+                            if master_password_set != 'True':
+                                return redirect(url_for('master_password'))
+                            else:
+                                return redirect(url_for('settings'))
 
         # Handle invalid email or password
         error_message = "Invalid email or password"
@@ -231,24 +237,81 @@ def register():
     if cform.validate_on_submit():
         with open('loginInfo.csv', 'a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([cform.username.data, cform.email.data, cform.dob.data, cform.password.data])
+            writer.writerow([
+                cform.username.data,
+                cform.email.data,
+                cform.dob.data,
+                cform.password.data,
+                'empty']) # Default 2FA status
 
             # Send verification email after successfully saving account details
             send_verification_email(cform.email.data)
 
-            flash('Account created successfully! An email will be sent to you .', 'success')
+            flash('Account created successfully! An email will be sent to you.', 'success')
             return redirect(url_for('login'))
     return render_template("register.html", form=cform)
 
 
-@app.route('/master_password_setup', methods=['GET', 'POST'])
+@app.route('/master_password', methods=['GET', 'POST'])
 def master_password():
-    return render_template('masterPassword.html')
+    if request.method == 'POST':
+        master_password = request.form['master_password']
+        email = session['email']
 
+        # Save the master password to the user's account
+        save_master_password(email, master_password)
+
+        # Flash a success message
+        flash('Master password set up successfully!', 'success')
+
+        return redirect(url_for('passwordList'))
+
+    return render_template('masterPassword.html')
 
 @app.route('/resetPassword', methods=['GET', 'POST'])
 def resetPassword():
     return render_template('resetPassword.html')
+def save_master_password(email, master_password):
+    data = []
+    updated = False
+@app.route('/passwordList', methods=['GET'])
+def passwordList():
+    # Check if the user is logged in
+    if 'username' in session:
+        # Get the username from the session
+        username = session['username']
+
+    with open('loginInfo.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row and row[1] == email:
+                # Update the row with the new master password
+        # Call the get_passwords function to retrieve the passwords associated with the user
+        user_passwords = get_passwords(username)
+
+        # Render an HTML table to display the passwords
+        return render_template('passwordList.html', passwords=user_passwords)
+    else:
+        # Redirect to the login page if the user is not logged in
+        flash('Please log in to access your passwords.', 'warning')
+        return redirect(url_for('login'))
+
+@app.route('/passwordView/<website>/<email>/<password>', methods=['GET', 'POST'])
+def passwordView(website, email, password):
+    return render_template('passwordView.html', website=website, email=email, password=password)
+
+                if len(row) < 6:
+                    row.append(master_password)
+                else:
+                    row[5] = master_password
+                updated = True
+            data.append(row)
+
+    if updated:
+        with open('loginInfo.csv', 'w', newline='') as file:
+            csvwriter = csv.writer(file)
+            csvwriter.writerows(data)
+
 
 
 @app.route('/settings', methods=['GET'])
@@ -292,6 +355,7 @@ def update_2fa_status(email, status):
             csvwriter.writerows(data)
 
     return updated
+
 
 @app.route('/get_2fa_status')
 def get_2fa_status():
@@ -346,24 +410,7 @@ def verify_2fa():
     
 @app.route('/passwordList', methods=['GET'])
 def passwordList():
-    # Check if the user is logged in
-    if 'username' in session:
-        # Get the username from the session
-        username = session['username']
-
-        # Call the get_passwords function to retrieve the passwords associated with the user
-        user_passwords = get_passwords(username)
-
-        # Render an HTML table to display the passwords
-        return render_template('passwordList.html', passwords=user_passwords)
-    else:
-        # Redirect to the login page if the user is not logged in
-        flash('Please log in to access your passwords.', 'warning')
-        return redirect(url_for('login'))
-
-@app.route('/passwordView/<website>/<email>/<password>', methods=['GET', 'POST'])
-def passwordView(website, email, password):
-    return render_template('passwordView.html', website=website, email=email, password=password)
+    return render_template('passwordList.html')
 
 def send_2fa_verification_email(email, pin):
     msg = Message("Your MasterVault 2FA PIN",
@@ -386,6 +433,42 @@ def is_valid_pin(email, entered_pin):
         if time_diff.total_seconds() <= 600:  # 10 minutes validity
             return True
     return False
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    # Check if the user is authenticated
+    if 'email' not in session:
+        return jsonify({"success": False, "message": "User not logged in."}), 401
+
+    email = session['email']
+
+    # Initialize variables
+    data = []
+    account_deleted = False
+
+    with open('loginInfo.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row[1] != email:
+                data.append(row)
+            else:
+                account_deleted = True
+
+        # Write the updated data back to the CSV file
+    if account_deleted:
+        with open('loginInfo.csv', 'w', newline='') as file:
+            csvwriter = csv.writer(file)
+            csvwriter.writerows(data)
+
+        # Clear the user's session and log them out
+        session.pop('email', None)
+        session.pop('username', None)
+
+        return jsonify({"success": True, "message": "Account successfully deleted."})
+    else:
+        return jsonify({"success": False, "message": "Account not found."})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
