@@ -283,9 +283,63 @@ font-family: Inter, sans-serif;
     color: #173356
 }
 
-.lockSlider{
-    margin-right: 500px;
+
+
+#countdownTimer {
+    margin-top: 10px;
+    color: red;
+    font-weight: bold;
 }
+
+.lock-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px; /* Adjusts space between items */
+    padding-right: 15px; /* Right padding for the whole container */
+}
+
+.lock-label {
+    margin-right: 10px; /* Space after the label */
+    white-space: nowrap; /* Prevent the text from wrapping */
+}
+
+#lockRange {
+    width: 300px;
+}
+
+#lockRangeLabel {
+    margin-right: 50px;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+#toggleLockBtn {
+    padding: 0.375rem 0.75rem;
+    white-space: nowrap; /* Keep the text on a single line */
+    width: auto; /* Adjust the width to content */
+    min-width: 150px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.unlock-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Adjust the space between elements */
+}
+
+.input-short {
+    width: auto; /* Allows you to control the width */
+    flex-grow: 1; /* Allows the input to grow to fill the space */
+    max-width: 250px; /* Maximum width of the input field */
+}
+
+.disabled-feature {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
 
 .btn-warning, .btn-danger {
     background-color: #173356;
@@ -336,3 +390,4 @@ background-color: #173356;
  background-color: #4c8cdb;
     border-color: #4c8cdb;
 }
+
