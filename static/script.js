@@ -551,4 +551,36 @@ function copyToClipboard() {
     }, 2000); //2 seconds
 }
 
+function copyWebsite() {
+    var field = document.getElementById('website-input');
+    field.select();
+    document.execCommand('copy');
+    changeIconTemporarily('website-icon');
+}
+
+function copyEmail() {
+    var field = document.getElementById('email-input');
+    field.select();
+    document.execCommand('copy');
+    changeIconTemporarily('email-icon');
+}
+
+function copyPassword() {
+    var field = document.getElementById('password-input');
+    field.select();
+    document.execCommand('copy');
+    changeIconTemporarily('password-icon');
+}
+
+function changeIconTemporarily(iconId) {
+    var icon = document.getElementById(iconId);
+    icon.className = 'bi bi-clipboard-check';
+
+    setTimeout(function () {
+        icon.className = 'bi bi-clipboard';
+    }, 2000); // Reset icon after 2 seconds
+}
+
+
+
 

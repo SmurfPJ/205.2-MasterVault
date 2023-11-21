@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-import random, string, csv, os, datetime
+import random, string, csv, os
 from forms import RegistrationForm, LoginForm
 from flask_mail import Mail, Message
 from dotenv import load_dotenv

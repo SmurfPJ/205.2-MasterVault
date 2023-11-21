@@ -5,6 +5,18 @@
     border-bottom: 2px solid #173356;
 }
 
+html{
+  margin:0;
+  padding:0;
+ min-height: 100%;
+}
+
+
+body {
+  background: rgba(1, 1, 1, 0);
+ min-height: 100%;
+}
+
 .baseLogo {
     max-width: 330px;
     height: auto;
@@ -32,8 +44,10 @@
 }
 
 .main-container {
-    display: flex;
-    min-height: 100vh;
+    display: flex; /* This ensures that your main-container uses flexbox */
+    align-items: normal;
+    height: 100vh;
+    padding-bottom: -00px;
 }
 
 
@@ -296,11 +310,11 @@ font-family: Inter, sans-serif;
     align-items: center;
     justify-content: flex-start;
     gap: 20px; /* Adjusts space between items */
-    padding-right: 15px; /* Right padding for the whole container */
+    padding-right: 15px;
 }
 
 .lock-label {
-    margin-right: 10px; /* Space after the label */
+    margin-right: 10px;
     white-space: nowrap; /* Prevent the text from wrapping */
 }
 
@@ -317,7 +331,7 @@ font-family: Inter, sans-serif;
 #toggleLockBtn {
     padding: 0.375rem 0.75rem;
     white-space: nowrap; /* Keep the text on a single line */
-    width: auto; /* Adjust the width to content */
+    width: auto;
     min-width: 150px;
     text-align: center;
     text-transform: uppercase;
@@ -326,13 +340,13 @@ font-family: Inter, sans-serif;
 .unlock-form {
     display: flex;
     align-items: center;
-    gap: 0.5rem; /* Adjust the space between elements */
+    gap: 0.5rem;
 }
 
 .input-short {
-    width: auto; /* Allows you to control the width */
-    flex-grow: 1; /* Allows the input to grow to fill the space */
-    max-width: 250px; /* Maximum width of the input field */
+    width: auto;
+    flex-grow: 1;
+    max-width: 250px;
 }
 
 .disabled-feature {
@@ -390,4 +404,44 @@ background-color: #173356;
  background-color: #4c8cdb;
     border-color: #4c8cdb;
 }
+
+/*PasswordView*/
+.passwordList {
+    margin-left: 300px; /* Space for sidebar */
+    margin-top: -760px; /* Adjust this to bring the .passwordList to the top */
+}
+
+
+
+.icon-button {
+    background-color: #173356;
+    border: none;
+    color: #FFFFFF;
+    margin: 0.25rem;
+    border-radius: 0.25rem;
+    padding: 8px; /* Adjust padding for icon size */
+  }
+
+.icon-button:hover {
+    background-color: #4c8cdb;
+  }
+
+.table, .table th, .table td {
+    background-color: transparent !important;
+    max-height: fit-content;
+  }
+
+.addPasswordButtonList {
+    background-color: transparent;
+    border-color: transparent;
+    color: #173356;
+    font-size: 3rem;
+    margin-top: 100px;
+}
+
+.addPasswordButtonList:hover {
+
+}
+
+
 
