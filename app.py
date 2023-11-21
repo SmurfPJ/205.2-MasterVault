@@ -79,7 +79,7 @@ def get_passwords(user):
             # Splits account data into lists of size 3 (In pattern [website, email, password])
             for accountDataIdx in range(len(csvAccount) - 1):
                 dataChunk = csvAccount[accountDataIdx + 1]
-                decrypt(dataChunk)
+                dataChunk
                 if accountDataIdx % (ACCOUNT_METADATA_LENGTH) == 0:
                     userAccounts.append([])
                 userAccounts[-1].append(dataChunk)
@@ -270,7 +270,7 @@ def register():
 def master_password():
     if request.method == 'POST':
         master_password = request.form['master_password']
-        encrypt(master_password)
+        master_password
         email = session['email']
 
         # Save the master password to the user's account
@@ -310,7 +310,7 @@ def addPassword():
         email = request.form['email']
         password = request.form['password']
 
-        saveNewPassword(username, encrypt(website), encrypt(email), encrypt(password))
+        saveNewPassword(username, website, email, password)
 
         return redirect(url_for('passwordList'))
 
