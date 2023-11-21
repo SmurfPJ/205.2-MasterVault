@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import random, string, csv, os, datetime
-from forms import RegistrationForm, LoginForm, ResetPasswordForm
+import random, string, csv, os
+from forms import RegistrationForm, LoginForm
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 from encryption import encrypt, decrypt
+from datetime import datetime
+import datetime
 
 #Constants
 ACCOUNT_METADATA_LENGTH = 6
@@ -11,7 +14,7 @@ ACCOUNT_METADATA_LENGTH = 6
 
 
 
-#Database paths
+# Database paths
 writeToLogin = open('loginInfo', 'w')
 
 app = Flask(__name__)
@@ -43,7 +46,7 @@ def generate_password(keyword, length, use_numbers, use_symbols):
     if length < len(keyword):
         return ""
 
-    # Add random characters to the keyword until the desired length is reached
+    # Add random characters to the keyword until desired length is reached
     while len(keyword) < length:
         keyword += random.choice(characters)
 
@@ -178,8 +181,8 @@ def login():
                 csvreader = csv.reader(file)
                 for account in csvreader:
                     # Ensure account has enough fields
-                    padded_account = account + [None] * (6 - len(account))
-                    username, account_email, dob, account_password, _2fa_status, master_password_set = padded_account
+                    padded_account = account + [None] * (9 - len(account))
+                    username, account_email, dob, account_password, _2fa_status, master_password_set, lock_state, lock_duration, lock_timestamp = padded_account
 
                     if email == account_email and password == account_password:
                         if request.is_json:
@@ -190,11 +193,11 @@ def login():
                             session['username'] = username
                             session['email'] = email
 
-                            # Redirect based on master password setup
-                            if master_password_set != 'True':
+                            # Check if master password is set
+                            if not master_password_set or master_password_set.lower() == 'false':
                                 return redirect(url_for('master_password'))
-                            else:
-                                return redirect(url_for('settings'))
+
+                            return redirect(url_for('settings'))
 
         # Handle invalid email or password
         error_message = "Invalid email or password"
@@ -407,6 +410,142 @@ def verify_2fa():
         return jsonify({'message': '2FA verification successful!'}), 200
     else:
         return jsonify({'message': 'Invalid or expired PIN'}), 400
+
+
+@app.route('/lock_account', methods=['POST'])
+def lock_account():
+    data = request.get_json()
+    email = session.get('email')
+    lock_duration = data.get('lockDuration')
+    success = lock_account_in_csv(email, lock_duration)  # function to lock the account
+
+    if success:
+        # Store lock state in the session
+        session['lock_state'] = 'locked'
+        session['unlock_time'] = datetime.datetime.now() + datetime.timedelta(minutes=int(lock_duration))
+        return jsonify({'status': 'success', 'message': 'Account locked'})
+    else:
+        return jsonify({'status': 'error', 'message': 'Failed to lock account'})
+
+
+@app.route('/check_lock', methods=['GET'])
+def check_lock():
+    email = session.get('email')
+    lock_state, unlock_timestamp = get_lock_state_from_csv(email)
+    current_time = datetime.now()
+
+    # Check if there's an unlock timestamp and convert it to a datetime object
+    if unlock_timestamp:
+        unlock_time = datetime.strptime(unlock_timestamp, '%Y-%m-%d %H:%M:%S')
+    else:
+        unlock_time = None
+
+    if lock_state == 'Locked' and unlock_time and current_time < unlock_time:
+        return jsonify({'locked': True, 'unlock_time': unlock_time.strftime('%Y-%m-%d %H:%M:%S')})
+    else:
+        update_lock_state_in_csv(email, 'Unlocked')
+        return jsonify({'locked': False})
+
+def get_lock_state_from_csv(email):
+    with open('loginInfo.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row and row[1] == email:
+                return row[6], row[7]  # Return the lock state and lock duration
+    return 'Unlocked', 'empty'  # Default to 'Unlocked' if not found
+
+def update_lock_state_in_csv(email, lock_state, lock_duration='empty', timestamp='empty'):
+    data = []
+    updated = False
+    with open('loginInfo.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row and row[1] == email:
+                row[6] = lock_state
+                row[7] = lock_duration
+                row[8] = timestamp
+                updated = True
+            data.append(row)
+
+    if updated:
+        with open('loginInfo.csv', 'w', newline='') as file:
+            csvwriter = csv.writer(file)
+            csvwriter.writerows(data)
+    return updated
+
+
+
+@app.route('/unlock_account', methods=['POST'])
+def unlock_account():
+    data = request.get_json()
+    email = session.get('email')  # assuming you store email in session upon login
+    master_password = data.get('master_password')
+
+    # check master password and update lock status in CSV
+    success = verify_and_unlock_account(email, master_password)
+
+    if success:
+        # Clear lock state from the session
+        session.pop('lock_state', None)
+        session.pop('unlock_time', None)
+        return jsonify({'status': 'success', 'message': 'Account unlocked'})
+    else:
+        return jsonify({'status': 'error', 'message': 'Incorrect master password'}), 401
+
+
+def verify_and_unlock_account(email, master_password):
+    data = []
+    unlocked = False
+
+    with open('loginInfo.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row and row[1] == email:
+
+                if row[5] == master_password:
+                    unlocked = True
+                    row[6] = 'Unlocked'
+                    row[7] = 'empty'     # Set lock duration to 'empty'
+                    row[8] = 'empty'     # Set lock timestamp to 'empty'
+            data.append(row)
+
+    # Rewrite the CSV file with the updated data
+    if unlocked:
+        with open('loginInfo.csv', 'w', newline='') as file:
+            csvwriter = csv.writer(file)
+            csvwriter.writerows(data)
+
+    return unlocked
+
+
+
+def lock_account_in_csv(email, lock_duration):
+    data = []
+    locked = False
+    lock_duration_in_minutes = int(lock_duration) * 10  # Convert lock duration to minutes
+
+    with open('loginInfo.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row and row[1] == email:
+                locked = True
+                current_timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                if len(row) >= 9:  # Check if row has enough elements
+                    row[6] = 'Locked'
+                    row[7] = str(lock_duration_in_minutes)
+                    row[8] = current_timestamp
+                else:
+
+                    row += ['Locked', str(lock_duration_in_minutes), current_timestamp]
+            data.append(row)
+
+    # Rewrite the CSV file with the updated data
+    if locked:
+        with open('loginInfo.csv', 'w', newline='') as file:
+            csvwriter = csv.writer(file)
+            csvwriter.writerows(data)
+
+    return locked
     
 @app.route('/passwordList', methods=['GET'])
 def passwordList():
