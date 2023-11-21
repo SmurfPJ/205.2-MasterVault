@@ -38,19 +38,34 @@
         </ul>
     </div>
 
-    <h4 class="section-title mb-1 ">Lock</h4>
-    <div class="section-box mb-5">
-        <ul class="list-unstyled">
-          <li class="d-flex align-items-center">
-            <span class="me-5">Lock for: </span>
-            <div class="form-check form-switch me-6">
-                 <input class="form-check-input" type="checkbox" id="lockSwitch" onchange="toggleSlider()">
-            </div>
-            <input type="range" min="1" max="5" value="1" class="slider me-5" id="lockRange" oninput="updateRangeLabel()" disabled>
-            <span id="lockRangeLabel">10 minutes</span>
-        </li>
-        </ul>
+   <h4 class="section-title mb-3">Lock</h4>
+<div class="section-box mb-5">
+    <ul class="list-unstyled">
+        <li>
+            <div class="d-flex justify-content-start align-items-center lock-container">
+    <span class="lock-label">Lock for:</span>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="lockSwitch" onchange="toggleSlider()">
     </div>
+    <input type="range" min="0" max="6" value="0" class="slider" id="lockRange" oninput="updateRangeLabel()" disabled>
+    <span id="lockRangeLabel">0 minutes</span>
+    <button id="toggleLockBtn" class="btn btn-secondary btn-sm" onclick="confirmLock()" disabled>LOCK ACCOUNT</button>
+</div>
+
+
+<div id="unlockForm" style="display: none;">
+    <input type="password" id="masterPasswordInput" placeholder="Enter Master Password" class="form-control input-short mb-2">
+    <button class="btn btn-primary btn-sm" onclick="unlockAccount()">UNLOCK</button>
+    <!-- Toggle visibility button -->
+    <button type="button" id="toggleLockVisibilityBtn" class="btn btn-outline-secondary btn-sm" onclick="toggleLockPasswordVisibility()">
+        <i id="toggleLockVisibilityIcon" class="bi bi-eye-slash" style="color: white"></i>
+    </button>
+</div>
+        </li>
+    </ul>
+</div>
+
+
 
     <h4 class="section-title mb-1">Reset/Delete</h4>
     <div class="section-box mb-5">

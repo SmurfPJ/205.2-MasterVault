@@ -1,5 +1,5 @@
-Username,Email,dob,Password,2FA,MasterPassword
-example,example@email.com,2004-02-17,example1,Enabled,example1
-nickichoo,nicki9656@gmail.com,1999-06-13,9289,Enabled
-peter,peter@hotmail.com,2004-02-17,1234567,Enabled
-steve,steve@email.com,2000-01-01,steve, Enabled
+Username,Email,DOB,Password,2FA,MasterPassword,LockStatus,LockDuration(min),LockTime
+example,example@email.com,2004-02-17,example
+johnsnow,john@gmail.com,1933-09-02,12121,Disabled
+peterlee,peter@hotmail.com,1980-08-13,12123,Disabled,8091,Unlocked,empty,empty
+nickichoo,nicki9656@gmail.com,1999-06-13,12123,Enabled,8091,Unlocked,empty,empty
