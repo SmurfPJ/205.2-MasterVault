@@ -4,7 +4,10 @@ from Cryptodome.Cipher import AES
 import os
 from Cryptodome.Random import get_random_bytes
 
-def encrypt(plain_text, password):
+password = "S3cr3tP@ssw0rd!"
+
+
+def encrypt(plain_text):
     # generate a random salt
     salt = get_random_bytes(AES.block_size)
 
@@ -25,7 +28,8 @@ def encrypt(plain_text, password):
     }
 
 
-def decrypt(enc_dict, password):
+def decrypt(enc_dict):
+
     # decode the dictionary entries from base64
     salt = b64decode(enc_dict['salt'])
     cipher_text = b64decode(enc_dict['cipher_text'])
@@ -49,11 +53,9 @@ def decrypt(enc_dict, password):
 # def main():
 #     password = input("Password: ")
 
-#     # First let us encrypt secret message
 #     encrypted = encrypt("The secretest message here", password)
 #     print(encrypted)
 
-#     # Let us decrypt using our original password
 #     decrypted = decrypt(encrypted, password)
 #     print(bytes.decode(decrypted))
 

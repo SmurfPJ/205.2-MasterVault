@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import random, string, csv, os, datetime
-import random, string, csv, os
 from forms import RegistrationForm, LoginForm
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
@@ -9,12 +8,20 @@ from datetime import datetime
 import datetime
 
 #Constants
-ACCOUNT_METADATA_LENGTH = 6
+ACCOUNT_METADATA_LENGTH = 3
 
 
+# Encrypt data
+# def encryptData():
 
+#     file = open('userData.csv')
+#     type(file)
+#     csvreader = csv.reader(file)
+#     for csvAccount in csvreader:
+#         for accountDataIdx in range(len(csvAccount) - 1):
+#                 dataChunk = csvAccount[accountDataIdx + 1]
 
-# Database paths
+#Database paths
 writeToLogin = open('loginInfo', 'w')
 
 app = Flask(__name__)
@@ -63,15 +70,16 @@ def generate_password(keyword, length, use_numbers, use_symbols):
 
 def get_passwords(user):
     # Open csv file
-    file = open('loginInfo.csv')
+    file = open('userData.csv')
     type(file)
     csvreader = csv.reader(file)
     for csvAccount in csvreader: # Reads each account in csv
         if user == csvAccount[0]: # Checks if account matches user
             userAccounts = []
             # Splits account data into lists of size 3 (In pattern [website, email, password])
-            for accountDataIdx in range(len(csvAccount) - ACCOUNT_METADATA_LENGTH):
-                dataChunk = csvAccount[accountDataIdx + ACCOUNT_METADATA_LENGTH]
+            for accountDataIdx in range(len(csvAccount) - 1):
+                dataChunk = csvAccount[accountDataIdx + 1]
+                decrypt(dataChunk)
                 if accountDataIdx % (ACCOUNT_METADATA_LENGTH) == 0:
                     userAccounts.append([])
                 userAccounts[-1].append(dataChunk)
@@ -184,6 +192,9 @@ def login():
                     padded_account = account + [None] * (9 - len(account))
                     username, account_email, dob, account_password, _2fa_status, master_password_set, lock_state, lock_duration, lock_timestamp = padded_account
 
+                    dob = dob
+                    _2fa_status = _2fa_status
+
                     if email == account_email and password == account_password:
                         if request.is_json:
                             # JSON response for the extension
@@ -259,6 +270,7 @@ def register():
 def master_password():
     if request.method == 'POST':
         master_password = request.form['master_password']
+        encrypt(master_password)
         email = session['email']
 
         # Save the master password to the user's account
@@ -271,38 +283,13 @@ def master_password():
 
     return render_template('masterPassword.html')
 
-@app.route('/resetPassword', methods=['GET', 'POST'])
-def resetPassword():
-    return render_template('resetPassword.html')
 def save_master_password(email, master_password):
     data = []
     updated = False
-@app.route('/passwordList', methods=['GET'])
-def passwordList():
-    # Check if the user is logged in
-    if 'username' in session:
-        # Get the username from the session
-        username = session['username']
-
     with open('loginInfo.csv', 'r', newline='') as file:
         csvreader = csv.reader(file)
         for row in csvreader:
             if row and row[1] == email:
-                # Update the row with the new master password
-        # Call the get_passwords function to retrieve the passwords associated with the user
-        user_passwords = get_passwords(username)
-
-        # Render an HTML table to display the passwords
-        return render_template('passwordList.html', passwords=user_passwords)
-    else:
-        # Redirect to the login page if the user is not logged in
-        flash('Please log in to access your passwords.', 'warning')
-        return redirect(url_for('login'))
-
-@app.route('/passwordView/<website>/<email>/<password>', methods=['GET', 'POST'])
-def passwordView(website, email, password):
-    return render_template('passwordView.html', website=website, email=email, password=password)
-
                 if len(row) < 6:
                     row.append(master_password)
                 else:
@@ -315,7 +302,123 @@ def passwordView(website, email, password):
             csvwriter = csv.writer(file)
             csvwriter.writerows(data)
 
+@app.route('/addPassword', methods=['GET', 'POST'])
+def addPassword():
+    if request.method == 'POST':
+        username = session['username']
+        website = request.form['website']
+        email = request.form['email']
+        password = request.form['password']
 
+        saveNewPassword(username, encrypt(website), encrypt(email), encrypt(password))
+
+        return redirect(url_for('passwordList'))
+
+    return render_template('addPassword.html')
+
+def saveNewPassword(username, website, email, password):
+    data = []
+    updated = False
+
+    with open('userData.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row and row[0] == username:
+                if len(row) % 3 == 1:
+                    row.extend([website, email, password])
+                else:
+                    row[-3:] = [website, email, password]
+                updated = True
+            data.append(row)
+
+    if not updated:
+        data.append([username, website, email, password])
+
+    with open('userData.csv', 'w', newline='') as file:
+        csvwriter = csv.writer(file)
+        csvwriter.writerows(data)
+
+@app.route('/passwordView/<website>/<email>/<password>', methods=['GET', 'POST'])
+def passwordView(website, email, password):
+    if request.method == 'POST':
+        # print("Data received:")
+        # print("Website:", request.form['website'])
+        # print("Email:", request.form['email'])
+        # print("Password:", request.form['password'])
+        username = session['username']
+        newWebsite = request.form['website']
+        newEmail = request.form['email']
+        newPassword = request.form['password']
+        saveChanges(username, website, email, password, newWebsite, newEmail, newPassword)
+        return redirect(url_for('passwordList'))
+    return render_template('passwordView.html', website=website, email=email, password=password)
+
+
+def saveChanges(username, old_website, old_email, old_password, new_website, new_email, new_password):
+    data = []
+    with open('userData.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row and row[0] == username:
+                for webIdx in range(int((len(row) - 1) / 3)):
+                    if row[webIdx * 3 + 1] == old_website and row[webIdx * 3 + 2] == old_email and row[webIdx * 3 + 3] == old_password:
+                        row[webIdx * 3 + 1] = new_website
+                        row[webIdx * 3 + 2] = new_email
+                        row[webIdx * 3 + 3] = new_password
+            data.append(row)
+
+    with open('userData.csv', 'w', newline='') as file:
+        csvwriter = csv.writer(file)
+        csvwriter.writerows(data)
+
+    # print(data)
+
+
+@app.route('/resetPassword', methods=['GET', 'POST'])
+def resetPassword():
+    if request.method == 'POST':
+        master_password = request.form['newPassword']
+        username = session['username']
+
+        resetPassword(username, master_password)
+
+        return redirect(url_for('passwordList'))
+
+    return render_template('resetPassword.html')
+
+def resetPassword(username, newPassword):
+    data = []
+    updated = False
+    with open('loginInfo.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+            if row and row[0] == username:
+                if len(row) < 6:
+                    row.append(newPassword)
+                else:
+                    row[3] = newPassword
+                updated = True
+            data.append(row)
+
+    if updated:
+        with open('loginInfo.csv', 'w', newline='') as file:
+            csvwriter = csv.writer(file)
+            csvwriter.writerows(data)
+
+
+@app.route('/passwordList', methods=['GET'])
+def passwordList():
+    # Check if the user is logged in
+    if 'username' in session:
+        # Get the username from the session
+        username = session['username']
+        user_passwords = get_passwords(username)
+        return render_template('passwordList.html', passwords=user_passwords)
+    
+    else:
+        # Redirect to the login page if the user is not logged in
+        flash('Please log in to access your passwords.', 'warning')
+        return redirect(url_for('login'))
 
 @app.route('/settings', methods=['GET'])
 def settings():
