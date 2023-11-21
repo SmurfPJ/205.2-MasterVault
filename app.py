@@ -649,10 +649,6 @@ def lock_account_in_csv(email, lock_duration):
             csvwriter.writerows(data)
 
     return locked
-    
-@app.route('/passwordList', methods=['GET'])
-def passwordList():
-    return render_template('passwordList.html')
 
 def send_2fa_verification_email(email, pin):
     msg = Message("Your MasterVault 2FA PIN",
