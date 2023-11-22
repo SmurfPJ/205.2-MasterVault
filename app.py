@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-import random, string, csv, os, datetime
+import random, string, csv, os
 from forms import RegistrationForm, LoginForm
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
@@ -125,47 +125,44 @@ def check_password_strength(password):
     return strength
 
 
+@app.route('/create_password', methods=['GET'])
+def display_create_password():
+    # Default values for initial page load
+    return render_template('createPassword.html', password="", keyword="", length=8, use_numbers=False, use_symbols=False)
 
-@app.route('/create_password', methods=['GET', 'POST'])
-def create_password():
+@app.route('/create_password', methods=['POST'])
+def handle_create_password():
+    # Initialize variables
     password = ""
     strength = None
     error = None
-    keyword = ""
-    length = 8  # Default length
-    use_numbers = False
-    use_symbols = False
+    keyword = request.form.get('keyword')
+    length = int(request.form.get('length', 8))  # Provide a default value in case it's not set
+    use_numbers = 'numbers' in request.form
+    use_symbols = 'symbols' in request.form
 
-    if request.method == 'POST':
-        keyword = request.form.get('keyword')
-        length = int(request.form.get('length'))
-        use_numbers = 'numbers' in request.form
-        use_symbols = 'symbols' in request.form
+    # Validate options and generate password
+    if not use_numbers and not use_symbols:
+        error = "Please select at least one option: Use Numbers or Use Symbols."
+    else:
+        password = generate_password(keyword, length, use_numbers, use_symbols)
+        strength = check_password_strength(password)
+        if not password:
+            error = "Failed to generate password. Ensure the keyword is shorter than the desired password length."
 
-        # Validate options
-        if not use_numbers and not use_symbols:
-            error = "Please select at least one option: Use Numbers or Use Symbols."
-        else:
-            password = generate_password(keyword, length, use_numbers, use_symbols)
-            strength = check_password_strength(password)
-            if not password:
-                error = "Failed to generate password. Ensure the keyword is shorter than the desired password length."
-
-        return render_template('createPassword.html', password=password, strength=strength, error=error, keyword=keyword, length=length, use_numbers=use_numbers, use_symbols=use_symbols)
-
-    return render_template('createPassword.html', password=password, keyword=keyword, length=length, use_numbers=use_numbers, use_symbols=use_symbols)
+    # Render the same template with new data
+    return render_template('createPassword.html', password=password, strength=strength, error=error, keyword=keyword, length=length, use_numbers=use_numbers, use_symbols=use_symbols)
 
 
-@app.route('/')
-def base():  # put application's code here
-    return redirect(url_for('login'))
 
-# will be deleting the base html as an app route once other pages are set up
 
-@app.route('/login', methods=['GET', 'POST'])
+
+
+
+
+@app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Initialize email and password variables
         email = None
         password = None
 
@@ -192,23 +189,25 @@ def login():
                     padded_account = account + [None] * (9 - len(account))
                     username, account_email, dob, account_password, _2fa_status, master_password_set, lock_state, lock_duration, lock_timestamp = padded_account
 
-                    dob = dob
-                    _2fa_status = _2fa_status
-
                     if email == account_email and password == account_password:
-                        if request.is_json:
-                            # JSON response for the extension
-                            return jsonify({"status": "success", "username": username, "email": email})
-                        else:
-                            # Handle session for web app
-                            session['username'] = username
-                            session['email'] = email
-
-                            # Check if master password is set
-                            if not master_password_set or master_password_set.lower() == 'false':
+                        # Check if master password is set
+                        if master_password_set.lower() == 'empty':
+                            # Redirect to master password setup if not set
+                            if request.is_json:
+                                # JSON response indicating master password setup is needed
+                                return jsonify({"status": "setup_master_password", "message": "Master password setup required"})
+                            else:
+                                session['username'] = username
+                                session['email'] = email
                                 return redirect(url_for('master_password'))
 
-                            return redirect(url_for('settings'))
+                        # Successful login handling
+                        if request.is_json:
+                            return jsonify({"status": "success", "username": username, "email": email})
+                        else:
+                            session['username'] = username
+                            session['email'] = email
+                            return redirect(url_for('passwordList'))
 
         # Handle invalid email or password
         error_message = "Invalid email or password"
@@ -219,6 +218,7 @@ def login():
             return render_template("login.html", form=cform)
 
     return render_template("login.html", form=LoginForm())
+
 
 
 
@@ -256,7 +256,12 @@ def register():
                 cform.email.data,
                 cform.dob.data,
                 cform.password.data,
-                'empty']) # Default 2FA status
+                'empty',               # Master Password placeholder (to be set later)
+                'empty',               # Default 2FA status
+                'Unlocked',            # Lock state
+                'empty',               # Lock duration
+                'empty'                # Timestamp
+            ])
 
             # Send verification email after successfully saving account details
             send_verification_email(cform.email.data)
@@ -264,6 +269,7 @@ def register():
             flash('Account created successfully! An email will be sent to you.', 'success')
             return redirect(url_for('login'))
     return render_template("register.html", form=cform)
+
 
 
 @app.route('/master_password', methods=['GET', 'POST'])
@@ -349,7 +355,7 @@ def passwordView(website, email, password):
         newWebsite = request.form['website']
         newEmail = request.form['email']
         newPassword = request.form['password']
-        saveChanges(username, website, email, password, newWebsite, newEmail, newPassword)
+        saveChanges(username, website, email, password, newEmail, newPassword, newWebsite)
         return redirect(url_for('passwordList'))
     return render_template('passwordView.html', website=website, email=email, password=password)
 
