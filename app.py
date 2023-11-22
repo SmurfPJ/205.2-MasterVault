@@ -125,44 +125,42 @@ def check_password_strength(password):
     return strength
 
 
+@app.route('/create_password', methods=['GET'])
+def display_create_password():
+    # Default values for initial page load
+    return render_template('createPassword.html', password="", keyword="", length=8, use_numbers=False, use_symbols=False)
 
-@app.route('/create_password', methods=['GET', 'POST'])
-def create_password():
+@app.route('/create_password', methods=['POST'])
+def handle_create_password():
+    # Initialize variables
     password = ""
     strength = None
     error = None
-    keyword = ""
-    length = 8  # Default length
-    use_numbers = False
-    use_symbols = False
+    keyword = request.form.get('keyword')
+    length = int(request.form.get('length', 8))  # Provide a default value in case it's not set
+    use_numbers = 'numbers' in request.form
+    use_symbols = 'symbols' in request.form
 
-    if request.method == 'POST':
-        keyword = request.form.get('keyword')
-        length = int(request.form.get('length'))
-        use_numbers = 'numbers' in request.form
-        use_symbols = 'symbols' in request.form
+    # Validate options and generate password
+    if not use_numbers and not use_symbols:
+        error = "Please select at least one option: Use Numbers or Use Symbols."
+    else:
+        password = generate_password(keyword, length, use_numbers, use_symbols)
+        strength = check_password_strength(password)
+        if not password:
+            error = "Failed to generate password. Ensure the keyword is shorter than the desired password length."
 
-        # Validate options
-        if not use_numbers and not use_symbols:
-            error = "Please select at least one option: Use Numbers or Use Symbols."
-        else:
-            password = generate_password(keyword, length, use_numbers, use_symbols)
-            strength = check_password_strength(password)
-            if not password:
-                error = "Failed to generate password. Ensure the keyword is shorter than the desired password length."
-
-        return render_template('createPassword.html', password=password, strength=strength, error=error, keyword=keyword, length=length, use_numbers=use_numbers, use_symbols=use_symbols)
-
-    return render_template('createPassword.html', password=password, keyword=keyword, length=length, use_numbers=use_numbers, use_symbols=use_symbols)
+    # Render the same template with new data
+    return render_template('createPassword.html', password=password, strength=strength, error=error, keyword=keyword, length=length, use_numbers=use_numbers, use_symbols=use_symbols)
 
 
-@app.route('/')
-def base():  # put application's code here
-    return redirect(url_for('login'))
 
-# will be deleting the base html as an app route once other pages are set up
 
-@app.route('/login', methods=['GET', 'POST'])
+
+
+
+
+@app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         # Initialize email and password variables
@@ -208,7 +206,7 @@ def login():
                             if not master_password_set or master_password_set.lower() == 'false':
                                 return redirect(url_for('master_password'))
 
-                            return redirect(url_for('settings'))
+                            return redirect(url_for('passwordList'))
 
         # Handle invalid email or password
         error_message = "Invalid email or password"
@@ -349,7 +347,7 @@ def passwordView(website, email, password):
         newWebsite = request.form['website']
         newEmail = request.form['email']
         newPassword = request.form['password']
-        saveChanges(username, website, email, password, newWebsite, newEmail, newPassword)
+        saveChanges(username, website, email, password, newEmail, newPassword, newWebsite)
         return redirect(url_for('passwordList'))
     return render_template('passwordView.html', website=website, email=email, password=password)
 

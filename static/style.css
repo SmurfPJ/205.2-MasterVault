@@ -439,9 +439,10 @@ background-color: #173356;
     margin-top: 100px;
 }
 
-.addPasswordButtonList:hover {
-
+.passwordViewGenerator {
+    max-width: 500px;
+    margin-left: 850px;
+    margin-top: -380px;
 }
-
 
 

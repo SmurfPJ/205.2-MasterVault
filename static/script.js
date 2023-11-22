@@ -468,6 +468,8 @@ function validateForm() {
 }
 
 
+
+
 function generatePassword(keyword, length, useNumbers, useSymbols) {
     var characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" + keyword;
 
@@ -581,6 +583,45 @@ function changeIconTemporarily(iconId) {
     }, 2000); // Reset icon after 2 seconds
 }
 
+function toggleNewPasswordVisibility() {
+    const passwordInput = document.getElementById('newPassword');
+    const togglePasswordIcon = document.getElementById('toggleNewPasswordIcon');
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        togglePasswordIcon.className = 'bi bi-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        togglePasswordIcon.className = 'bi bi-eye';
+    }
+}
+
+function toggleConfirmNewPasswordVisibility() {
+    const passwordInput = document.getElementById('confirmNewPassword');
+    const togglePasswordIcon = document.getElementById('toggleConfirmNewPasswordIcon');
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        togglePasswordIcon.className = 'bi bi-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        togglePasswordIcon.className = 'bi bi-eye';
+    }
+}
+
+
+
+function checkNewPasswordMatch() {
+    const masterPassword = document.getElementById('newPassword').value;
+    const confirmMasterPassword = document.getElementById('confirmNewPassword').value;
+    const passwordMatchMessage = document.getElementById('passwordMatchMessage');
+
+    if (masterPassword === confirmMasterPassword) {
+        passwordMatchMessage.style.color = 'green';
+        passwordMatchMessage.innerText = 'Passwords match';
+    } else {
+        passwordMatchMessage.style.color = 'red';
+        passwordMatchMessage.innerText = 'Passwords do not match';
+    }
+}
 
 
 
