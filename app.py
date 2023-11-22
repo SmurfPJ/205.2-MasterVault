@@ -163,7 +163,6 @@ def handle_create_password():
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Initialize email and password variables
         email = None
         password = None
 
@@ -190,22 +189,24 @@ def login():
                     padded_account = account + [None] * (9 - len(account))
                     username, account_email, dob, account_password, _2fa_status, master_password_set, lock_state, lock_duration, lock_timestamp = padded_account
 
-                    dob = dob
-                    _2fa_status = _2fa_status
-
                     if email == account_email and password == account_password:
-                        if request.is_json:
-                            # JSON response for the extension
-                            return jsonify({"status": "success", "username": username, "email": email})
-                        else:
-                            # Handle session for web app
-                            session['username'] = username
-                            session['email'] = email
-
-                            # Check if master password is set
-                            if not master_password_set or master_password_set.lower() == 'false':
+                        # Check if master password is set
+                        if master_password_set.lower() == 'empty':
+                            # Redirect to master password setup if not set
+                            if request.is_json:
+                                # JSON response indicating master password setup is needed
+                                return jsonify({"status": "setup_master_password", "message": "Master password setup required"})
+                            else:
+                                session['username'] = username
+                                session['email'] = email
                                 return redirect(url_for('master_password'))
 
+                        # Successful login handling
+                        if request.is_json:
+                            return jsonify({"status": "success", "username": username, "email": email})
+                        else:
+                            session['username'] = username
+                            session['email'] = email
                             return redirect(url_for('passwordList'))
 
         # Handle invalid email or password
@@ -217,6 +218,7 @@ def login():
             return render_template("login.html", form=cform)
 
     return render_template("login.html", form=LoginForm())
+
 
 
 
@@ -254,7 +256,12 @@ def register():
                 cform.email.data,
                 cform.dob.data,
                 cform.password.data,
-                'empty']) # Default 2FA status
+                'empty',               # Master Password placeholder (to be set later)
+                'empty',               # Default 2FA status
+                'Unlocked',            # Lock state
+                'empty',               # Lock duration
+                'empty'                # Timestamp
+            ])
 
             # Send verification email after successfully saving account details
             send_verification_email(cform.email.data)
@@ -262,6 +269,7 @@ def register():
             flash('Account created successfully! An email will be sent to you.', 'success')
             return redirect(url_for('login'))
     return render_template("register.html", form=cform)
+
 
 
 @app.route('/master_password', methods=['GET', 'POST'])

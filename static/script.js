@@ -199,13 +199,6 @@ function resetLockUI() {
 
 
 
-
-
-
-
-
-
-
 //2FA Authentications
 document.addEventListener('DOMContentLoaded', function() {
     const twoStepVerificationCheckbox = document.getElementById('twoStepVerification');
