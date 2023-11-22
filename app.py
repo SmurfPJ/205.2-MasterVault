@@ -79,7 +79,7 @@ def get_passwords(user):
             # Splits account data into lists of size 3 (In pattern [website, email, password])
             for accountDataIdx in range(len(csvAccount) - 1):
                 dataChunk = csvAccount[accountDataIdx + 1]
-                dataChunk
+                # decrypt(dataChunk)
                 if accountDataIdx % (ACCOUNT_METADATA_LENGTH) == 0:
                     userAccounts.append([])
                 userAccounts[-1].append(dataChunk)
@@ -158,7 +158,7 @@ def create_password():
 
 @app.route('/')
 def base():  # put application's code here
-    return render_template('base.html')
+    return redirect(url_for('login'))
 
 # will be deleting the base html as an app route once other pages are set up
 
@@ -412,13 +412,24 @@ def passwordList():
     if 'username' in session:
         # Get the username from the session
         username = session['username']
-        user_passwords = get_passwords(username)
-        return render_template('passwordList.html', passwords=user_passwords)
+        with open('loginInfo.csv', 'r', newline='') as file:
+            csvreader = csv.reader(file)
+            for row in csvreader:
+                if row and row[0] == username:
+                    if row[6] == 'Locked':
+                        return redirect(url_for('lockedPasswordList'))
+                    else:
+                        user_passwords = get_passwords(username)
+                        return render_template('passwordList.html', passwords=user_passwords)
     
     else:
         # Redirect to the login page if the user is not logged in
         flash('Please log in to access your passwords.', 'warning')
         return redirect(url_for('login'))
+    
+@app.route('/lockedPasswordList', methods=['GET'])
+def lockedPasswordList():
+    return render_template('lockedPasswordList.html')
 
 @app.route('/settings', methods=['GET'])
 def settings():

@@ -47,16 +47,17 @@ def decrypt(enc_dict):
     # decrypt the cipher text
     decrypted = cipher.decrypt_and_verify(cipher_text, tag)
 
-    return decrypted
+    return bytes.decode(decrypted)
 
 
 # def main():
-#     password = input("Password: ")
+#     plain_text = input("Password: ")
 
-#     encrypted = encrypt("The secretest message here", password)
-#     print(encrypted)
+#     encrypted = encrypt(plain_text)
+#     print("Encrypted: ", encrypted)
 
-#     decrypted = decrypt(encrypted, password)
-#     print(bytes.decode(decrypted))
+#     decrypted = decrypt(encrypted)
+#     print("Decrypted: ", decrypted)
+#     print("Decrypted bytes: ", bytes.decode(decrypted))
 
 # main()
