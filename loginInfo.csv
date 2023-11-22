@@ -1,5 +1,6 @@
 Username,Email,DOB,Password,2FA,MasterPassword,LockStatus,LockDuration(min),LockTime
 example,example@email.com,2004-02-17,example,Disabled,example1
 johnsnow,john@gmail.com,1933-09-02,12121,Disabled
-peterlee,peter@hotmail.com,1980-08-13,12123,Disabled,8091,Unlocked,empty,empty
+peterlee,peter@hotmail.com,1980-08-13,12123,Disabled,8091,Locked,200,2023-11-22 10:52:10
 nickichoo,nicki9656@gmail.com,1999-06-13,12123,Enabled,8091,Unlocked,empty,empty
+ConorCanCook,smurfpj18@gmail.com,2004-02-17,123456,Enabled,12345,Unlocked,empty,empty
