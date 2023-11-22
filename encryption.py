@@ -20,6 +20,10 @@ def encrypt(plain_text):
 
     # return a dictionary with the encrypted text
     cipher_text, tag = cipher_config.encrypt_and_digest(bytes(plain_text, 'utf-8'))
+
+    print("Tag: ", b64encode(tag).decode('utf-8'))
+    print("Nonce: ", b64encode(cipher_config.nonce).decode('utf-8'))
+
     return {
         'cipher_text': b64encode(cipher_text).decode('utf-8'),
         'salt': b64encode(salt).decode('utf-8'),
@@ -50,14 +54,13 @@ def decrypt(enc_dict):
     return bytes.decode(decrypted)
 
 
-# def main():
-#     plain_text = input("Password: ")
+def main():
+    plain_text = input("Password: ")
 
-#     encrypted = encrypt(plain_text)
-#     print("Encrypted: ", encrypted)
+    encrypted = encrypt(plain_text)
+    print("Encrypted: ", encrypted)
 
-#     decrypted = decrypt(encrypted)
-#     print("Decrypted: ", decrypted)
-#     print("Decrypted bytes: ", bytes.decode(decrypted))
+    decrypted = decrypt(encrypted)
+    print("Decrypted: ", decrypted)
 
-# main()
+main()
