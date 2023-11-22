@@ -33,8 +33,6 @@
             </div>
             <!-- Feedback Messages -->
             <div id="twoStepFeedback" class="text-muted mt-2"></div>
-
-            <li>Change Master Password</li>
         </ul>
     </div>
 
@@ -73,6 +71,10 @@
         <li class="d-flex justify-content-between align-items-center">
             Reset Password
             <a href="{{ url_for('resetPassword') }}" class="btn btn-warning mb-4">RESET</a>
+        </li>
+        <li class="d-flex justify-content-between align-items-center">
+            Reset Master Password
+            <a href="{{ url_for('master_password') }}" class="btn btn-warning mb-4">RESET</a>
         </li>
         <li class="d-flex justify-content-between align-items-center">
             Delete MasterVault Account
