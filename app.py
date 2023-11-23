@@ -79,7 +79,7 @@ def get_passwords(user):
             # Splits account data into lists of size 3 (In pattern [website, email, password])
             for accountDataIdx in range(len(csvAccount) - 1):
                 dataChunk = csvAccount[accountDataIdx + 1]
-                # decrypt(dataChunk)
+                dataChunk = decrypt(dataChunk)
                 if accountDataIdx % (ACCOUNT_METADATA_LENGTH) == 0:
                     userAccounts.append([])
                 userAccounts[-1].append(dataChunk)
@@ -126,9 +126,9 @@ def check_password_strength(password):
 
 
 @app.route('/create_password', methods=['GET'])
-def display_create_password():
+def create_password():
     # Default values for initial page load
-    return render_template('createPassword.html', password="", keyword="", length=8, use_numbers=False, use_symbols=False)
+    return render_template('createPassword.html') # , password="", keyword="", length=8, use_numbers=False, use_symbols=False
 
 @app.route('/create_password', methods=['POST'])
 def handle_create_password():
@@ -186,10 +186,15 @@ def login():
                 csvreader = csv.reader(file)
                 for account in csvreader:
                     # Ensure account has enough fields
+                    print(account)
                     padded_account = account + [None] * (9 - len(account))
                     username, account_email, dob, account_password, _2fa_status, master_password_set, lock_state, lock_duration, lock_timestamp = padded_account
 
-                    if email == account_email and password == account_password:
+                    dob = dob
+                    _2fa_status = _2fa_status
+
+
+                    if email == account_email and password == decrypt(account_password):
                         # Check if master password is set
                         if master_password_set.lower() == 'empty':
                             # Redirect to master password setup if not set
@@ -201,7 +206,7 @@ def login():
                                 session['email'] = email
                                 return redirect(url_for('master_password'))
 
-                        # Successful login handling
+                    if email == account_email and password == account_password:
                         if request.is_json:
                             return jsonify({"status": "success", "username": username, "email": email})
                         else:
@@ -255,7 +260,7 @@ def register():
                 cform.username.data,
                 cform.email.data,
                 cform.dob.data,
-                cform.password.data,
+                encrypt(cform.password.data),
                 'empty',               # Master Password placeholder (to be set later)
                 'empty',               # Default 2FA status
                 'Unlocked',            # Lock state
@@ -276,7 +281,7 @@ def register():
 def master_password():
     if request.method == 'POST':
         master_password = request.form['master_password']
-        master_password
+        master_password = encrypt(master_password)
         email = session['email']
 
         # Save the master password to the user's account
@@ -315,6 +320,10 @@ def addPassword():
         website = request.form['website']
         email = request.form['email']
         password = request.form['password']
+
+        website = encrypt(website)
+        email = encrypt(email)
+        password = encrypt(password)
 
         saveNewPassword(username, website, email, password)
 
