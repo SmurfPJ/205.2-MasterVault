@@ -63,6 +63,11 @@
     </ul>
 </div>
 
+       {% for message in get_flashed_messages(category_filter=["error", "success"]) %}
+                <div class="alert alert-{{ 'danger' if 'error' in message else 'success' }} alert-dismissible">
+                    {{ message }}
+                </div>
+                {% endfor %}
 
 
     <h4 class="section-title mb-1">Reset/Delete</h4>

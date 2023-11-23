@@ -199,13 +199,6 @@ function resetLockUI() {
 
 
 
-
-
-
-
-
-
-
 //2FA Authentications
 document.addEventListener('DOMContentLoaded', function() {
     const twoStepVerificationCheckbox = document.getElementById('twoStepVerification');
@@ -468,6 +461,8 @@ function validateForm() {
 }
 
 
+
+
 function generatePassword(keyword, length, useNumbers, useSymbols) {
     var characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" + keyword;
 
@@ -549,6 +544,96 @@ function copyToClipboard() {
     setTimeout(function () {
         document.getElementById('clipboard-icon').className = 'bi bi-clipboard';
     }, 2000); //2 seconds
+}
+
+function copyWebsite() {
+    var field = document.getElementById('website-input');
+    field.select();
+    document.execCommand('copy');
+    changeIconTemporarily('website-icon');
+}
+
+function copyEmail() {
+    var field = document.getElementById('email-input');
+    field.select();
+    document.execCommand('copy');
+    changeIconTemporarily('email-icon');
+}
+
+function copyPassword() {
+    var field = document.getElementById('password-input');
+    field.select();
+    document.execCommand('copy');
+    changeIconTemporarily('password-icon');
+}
+
+function changeIconTemporarily(iconId) {
+    var icon = document.getElementById(iconId);
+    icon.className = 'bi bi-clipboard-check';
+
+    setTimeout(function () {
+        icon.className = 'bi bi-clipboard';
+    }, 2000); // Reset icon after 2 seconds
+}
+
+function toggleNewPasswordVisibility() {
+    const passwordInput = document.getElementById('newPassword');
+    const togglePasswordIcon = document.getElementById('toggleNewPasswordIcon');
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        togglePasswordIcon.className = 'bi bi-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        togglePasswordIcon.className = 'bi bi-eye';
+    }
+}
+
+function toggleConfirmNewPasswordVisibility() {
+    const passwordInput = document.getElementById('confirmNewPassword');
+    const togglePasswordIcon = document.getElementById('toggleConfirmNewPasswordIcon');
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        togglePasswordIcon.className = 'bi bi-eye-slash';
+    } else {
+        passwordInput.type = 'password';
+        togglePasswordIcon.className = 'bi bi-eye';
+    }
+}
+
+
+
+function checkNewPasswordMatch() {
+    const masterPassword = document.getElementById('newPassword').value;
+    const confirmMasterPassword = document.getElementById('confirmNewPassword').value;
+    const passwordMatchMessage = document.getElementById('passwordMatchMessage');
+
+    if (masterPassword === confirmMasterPassword) {
+        passwordMatchMessage.style.color = 'green';
+        passwordMatchMessage.innerText = 'Passwords match';
+    } else {
+        passwordMatchMessage.style.color = 'red';
+        passwordMatchMessage.innerText = 'Passwords do not match';
+    }
+}
+
+//passwordList
+function deleteEntry(website, email, password) {
+    if (confirm('Are you sure you want to delete this entry?')) {
+        fetch('/delete-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({website: website, email: email, password: password})
+        }).then(response => {
+            if (response.ok) {
+                alert('Entry deleted successfully');
+                window.location.reload();
+            } else {
+                alert('Failed to delete entry');
+            }
+        });
+    }
 }
 
 
