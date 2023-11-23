@@ -187,7 +187,7 @@ def login():
                     dob = dob
                     _2fa_status = _2fa_status
 
-                    if email == account_email and password == account_password:
+                    if email == account_email and password == decrypt(account_password):
                         # Check if master password is set
                         if master_password_set.lower() == 'empty':
                             # Redirect to master password setup if not set
@@ -271,40 +271,27 @@ def register():
 
 @app.route('/master_password', methods=['GET', 'POST'])
 def master_password():
+    email = session.get('email')
+    # Check if the user is logged in and if the account is locked
+    if email:
+        locked, _ = get_lock_state_from_csv(email)
+        if locked == 'Locked':
+            flash(
+            'Your account is currently locked. You cannot set or reset the master password while the account is locked.',
+            'error')
+            return redirect(url_for('settings'))
+    
     if request.method == 'POST':
         master_password = request.form['master_password']
-        master_password = encrypt(master_password)
-        email = session['email']
 
-        # Save the master password to the user's account
-        save_master_password(email, master_password)
-
+        encrypted_master_password = encrypt(master_password)
+        # Save the encrypted master password to the user's account
+        save_master_password(email, encrypted_master_password)
         # Flash a success message
         flash('Master password set up successfully!', 'success')
-
         return redirect(url_for('passwordList'))
-
+    
     return render_template('masterPassword.html')
-
-    # Check if the account is locked
-    # if email:
-    #     locked, _ = get_lock_state_from_csv(email)
-    #     if locked == 'Locked':
-    #         flash('Your account is currently locked. You cannot set or reset the master password '
-    #               'while the account is locked.','error')
-    #         return redirect(url_for('settings'))
-    
-    # if request.method == 'POST':
-    #     master_password = request.form['master_password']
-    
-    #     # Save the master password to the user's account
-    #     save_master_password(email, master_password)
-    
-    #     # Flash a success message
-    #     flash('Master password set up successfully!', 'success')
-    #     return redirect(url_for('passwordList'))
-    
-    # return render_template('masterPassword.html')
 
 
 def save_master_password(email, master_password):

@@ -1,6 +1,1 @@
 Username,Email,DOB,Password,2FA,MasterPassword,LockStatus,LockDuration(min),LockTime
-example,example@email.com,2004-02-17,example,Disabled,example1,empty, empty, empty
-johnsnow,john@gmail.com,1933-09-02,12121,Disabled,8099,empty, empty, empty
-nickichoo,nicki9656@gmail.com,1999-06-13,12123,Enabled,8091,Unlocked,empty,empty
-john,john@gmail.com,1980-08-09,12333,empty,8099,Unlocked,empty,empty
-steve,smurfpj18@gmail.com,2000-01-01,b'gAAAAABlXqV2URTDruy9uNGxQI3uZWChXrcp0W1GlQUi2E9sO0oINT-Sk7waB_spddlPDkyngsnbpoPaOkT7hQkxQNKO_SvMCA==',empty,b'gAAAAABlXqdhoW6irxYrvFFAcmdX9rlo73ghHa1zva-heWryMc_RpmC5ERhczGuoCGO2_G7MCsKXg1xKkqoloNfKZwANI0_wXA==',Unlocked,empty,empty
