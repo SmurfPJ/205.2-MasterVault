@@ -3,7 +3,7 @@ import random, string, csv, os
 from forms import RegistrationForm, LoginForm
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
-from encryption import encrypt
+from encryption import encrypt, decrypt
 from datetime import datetime
 import datetime
 
@@ -76,7 +76,7 @@ def get_passwords(user):
             # Splits account data into lists of size 3 (In pattern [website, email, password])
             for accountDataIdx in range(len(csvAccount) - 1):
                 dataChunk = csvAccount[accountDataIdx + 1]
-                # dataChunk = decrypt(dataChunk)
+                dataChunk = decrypt(dataChunk)
                 if accountDataIdx % (ACCOUNT_METADATA_LENGTH) == 0:
                     userAccounts.append([])
                 userAccounts[-1].append(dataChunk)
@@ -286,24 +286,24 @@ def master_password():
 
     return render_template('masterPassword.html')
 
-    # # Check if the account is locked
+    # Check if the account is locked
     # if email:
     #     locked, _ = get_lock_state_from_csv(email)
     #     if locked == 'Locked':
     #         flash('Your account is currently locked. You cannot set or reset the master password '
     #               'while the account is locked.','error')
     #         return redirect(url_for('settings'))
-    #
+    
     # if request.method == 'POST':
     #     master_password = request.form['master_password']
-    #
+    
     #     # Save the master password to the user's account
     #     save_master_password(email, master_password)
-    #
+    
     #     # Flash a success message
     #     flash('Master password set up successfully!', 'success')
     #     return redirect(url_for('passwordList'))
-    #
+    
     # return render_template('masterPassword.html')
 
 
