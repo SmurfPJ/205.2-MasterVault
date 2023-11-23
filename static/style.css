@@ -1,0 +1,393 @@
+/* base */
+.logo-bar {
+    padding: 23px;
+    text-align: left;
+    border-bottom: 2px solid #173356;
+}
+
+.baseLogo {
+    max-width: 330px;
+    height: auto;
+}
+
+.logo-bar {
+    padding: 23px;
+    text-align: left;
+    border-bottom: 2px solid #173356;
+    position: relative;
+}
+
+.logout-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5em;
+    color: #000;
+    text-decoration: none;
+}
+
+.logout-icon:hover {
+    color: #173356;
+}
+
+.main-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+.nav-drawer {
+    flex-shrink: 0;
+    width: 280px;
+    background-color: white;
+    padding-top: 20px;
+    border-right: 2px solid #173356;
+    box-shadow: 10px 0px 0px 0px #738499;
+}
+
+.navFont {
+font-family: Inter, sans-serif;
+    color: #173356
+}
+
+
+.user-info {
+    padding: 0 15px;
+    margin-bottom: 60px;
+}
+
+.welcome-message {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.email-message {
+    font-size: 0.9em;
+    color: #555;
+}
+
+.nav-drawer ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-drawer li {
+    margin-bottom: 10px;
+}
+
+.nav-drawer a {
+    padding: 20px 15px;
+    text-decoration: none;
+    font-size: 20px;
+    color: black;
+    display: block;
+    white-space: nowrap;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.nav-drawer a:hover {
+    color: white;
+    background-color: #8b99aa;
+}
+
+
+/*login page*/
+#loginLogo {
+    width: 230px;
+    height: auto;
+}
+
+.flash-messages-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050;
+    width: auto;
+    max-width: 100%;
+}
+
+.alert-dismissible {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+}
+
+
+.fade-out {
+    opacity: 0 !important;
+}
+
+
+.LoginTitleFont {
+font-family: Inter, sans-serif;
+    font-weight: bold;
+    color: #173356;
+}
+
+.login-container {
+    padding-top: 100px;
+}
+
+.registerPasswordlink {
+    color: #0d6efd;
+    font-size: 15px;
+}
+
+.registerPasswordlink:hover {
+    color: #0a58ca;
+}
+
+
+.forgotPasswordlink {
+    color: #0d6efd;
+    font-size: 15px;
+    text-decoration-line: underline;
+}
+
+.forgotPasswordlink:hover {
+    color: #0d6efd;
+}
+
+
+.loginButton {
+    background-color: #173356;
+    border-color: #173356;
+}
+
+.loginButton:hover{
+    background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+/*Register Page */
+#registerLogo {
+width: 220px;
+height: auto;
+}
+.registerButton {
+  background-color: #173356;
+  border-color: #173356;
+}
+
+.registerButton:hover {
+    background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+.titleFontregister {
+    font-family: Inter, sans-serif;
+    font-weight: bold;
+    color: #173356;
+}
+
+/*Master Password*/
+#masterPasswordLogo {
+width: 230px;
+height: auto;
+}
+
+.masterPasswordButton {
+background-color: #173356;
+  border-color: #173356;
+}
+
+.masterPasswordButton:hover {
+background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+#passwordMatchMessage {
+    font-size: 13px;
+}
+
+/*Settings*/
+.settings-container {
+    padding-left: 350px;
+    margin-top: -750px;
+}
+
+
+.section-box {
+    border: 2px solid #173356;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    width: 1050px;  /* Optional: to ensure the box doesn't get too wide on large screens */
+    background-color: #f8f8f8;
+}
+
+.section-title {
+    margin-bottom: 5px;
+}
+
+/* Remove bullet points from the list */
+.list-unstyled {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.btn-sm {
+    background-color: #173356;
+    border-color: #173356;
+    width: 100px;
+    text-align: center;
+    line-height: 25px;
+}
+
+.btn-sm:hover {
+background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+
+.form-check-input {
+    width: 30px;
+    height: 18px;
+    text-align: center;
+}
+
+
+.form-check-input::after {
+    width: 30px;
+    height: 18px;
+    background-color: #173356;
+    border-radius: 50%;
+    transition: transform .3s;
+    transform: translateX(0);
+}
+
+.form-check-input:checked {
+    background-color: #4caf50;
+}
+
+.form-check-input:checked + .form-check-input::after {
+    transform: translateX(1em);
+}
+
+input[type=range] {
+    width: 400px;
+    margin-left: 300px;
+}
+
+.settingFont {
+ font-family: Inter, sans-serif;
+    font-weight: bold;
+    color: #173356
+}
+
+.section-title {
+font-family: Inter, sans-serif;
+    color: #173356
+}
+
+
+
+#countdownTimer {
+    margin-top: 10px;
+    color: red;
+    font-weight: bold;
+}
+
+.lock-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px; /* Adjusts space between items */
+    padding-right: 15px; /* Right padding for the whole container */
+}
+
+.lock-label {
+    margin-right: 10px; /* Space after the label */
+    white-space: nowrap; /* Prevent the text from wrapping */
+}
+
+#lockRange {
+    width: 300px;
+}
+
+#lockRangeLabel {
+    margin-right: 50px;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+#toggleLockBtn {
+    padding: 0.375rem 0.75rem;
+    white-space: nowrap; /* Keep the text on a single line */
+    width: auto; /* Adjust the width to content */
+    min-width: 150px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.unlock-form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Adjust the space between elements */
+}
+
+.input-short {
+    width: auto; /* Allows you to control the width */
+    flex-grow: 1; /* Allows the input to grow to fill the space */
+    max-width: 250px; /* Maximum width of the input field */
+}
+
+.disabled-feature {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+
+.btn-warning, .btn-danger {
+    background-color: #173356;
+    border-color: #173356;
+    color: white;
+    width: 100px;
+    text-align: center;
+}
+
+/*Password Generator*/
+.password-container {
+ padding-left: 350px;
+    margin-top: -750px;
+}
+
+.passwordGeneratortitleFont {
+font-family: Inter, sans-serif;
+    color: #173356;
+    font-weight: bold;
+}
+
+.refreshButton {
+ background-color: #173356;
+    border-color: #173356;
+}
+
+.refreshButton:hover {
+ background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+.clipboardButton {
+background-color: #173356;
+    border-color: #173356;
+}
+
+.clipboardButton:hover {
+ background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
+.generatePasswordbutton {
+background-color: #173356;
+    border-color: #173356;
+}
+
+.generatePasswordbutton:hover {
+ background-color: #4c8cdb;
+    border-color: #4c8cdb;
+}
+
