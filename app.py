@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-import random, string, csv, os, datetime
+import random, string, csv, os
 from forms import RegistrationForm, LoginForm
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
@@ -7,9 +7,8 @@ from encryption import encrypt, decrypt
 from datetime import datetime
 import datetime
 
-#Constants
+# Constants
 ACCOUNT_METADATA_LENGTH = 3
-
 
 # Encrypt data
 # def encryptData():
@@ -21,13 +20,12 @@ ACCOUNT_METADATA_LENGTH = 3
 #         for accountDataIdx in range(len(csvAccount) - 1):
 #                 dataChunk = csvAccount[accountDataIdx + 1]
 
-#Database paths
+# Database paths
 writeToLogin = open('loginInfo', 'w')
 
 app = Flask(__name__)
-mail= Mail(app)
+mail = Mail(app)
 load_dotenv()
-
 
 app.config['SECRET_KEY'] = '47a9cee106fa8c2c913dd385c2be207d'
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -37,7 +35,6 @@ app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 app.config['MAIL_USE_SSL'] = True
 app.config['MAIL_USE_TLS'] = False
 mail = Mail(app)
-
 
 
 def generate_password(keyword, length, use_numbers, use_symbols):
@@ -60,8 +57,8 @@ def generate_password(keyword, length, use_numbers, use_symbols):
     # Pattern is basically every third character from the keyword (subjected to change)
     password = ""
     for i in range(length):
-        if i % 3 == 0 and i//3 < len(keyword):
-            password += keyword[i//3]
+        if i % 3 == 0 and i // 3 < len(keyword):
+            password += keyword[i // 3]
         else:
             password += random.choice(characters)
 
@@ -73,8 +70,8 @@ def get_passwords(user):
     file = open('userData.csv')
     type(file)
     csvreader = csv.reader(file)
-    for csvAccount in csvreader: # Reads each account in csv
-        if user == csvAccount[0]: # Checks if account matches user
+    for csvAccount in csvreader:  # Reads each account in csv
+        if user == csvAccount[0]:  # Checks if account matches user
             userAccounts = []
             # Splits account data into lists of size 3 (In pattern [website, email, password])
             for accountDataIdx in range(len(csvAccount) - 1):
@@ -83,8 +80,8 @@ def get_passwords(user):
                 if accountDataIdx % (ACCOUNT_METADATA_LENGTH) == 0:
                     userAccounts.append([])
                 userAccounts[-1].append(dataChunk)
-            
-            userAccounts.sort(key=lambda x: x[0]) # Sorts data alphabetically by website
+
+            userAccounts.sort(key=lambda x: x[0])  # Sorts data alphabetically by website
             return userAccounts
     return []
 
@@ -128,48 +125,38 @@ def check_password_strength(password):
 @app.route('/create_password', methods=['GET'])
 def create_password():
     # Default values for initial page load
-    return render_template('createPassword.html') # , password="", keyword="", length=8, use_numbers=False, use_symbols=False
+    return render_template(
+        'createPassword.html')  # , password="", keyword="", length=8, use_numbers=False, use_symbols=False
 
-@app.route('/create_password', methods=['GET', 'POST'])
-def create_password():
+
+@app.route('/create_password', methods=['POST'])
+def handle_create_password():
+    # Initialize variables
     password = ""
     strength = None
     error = None
-    keyword = ""
-    length = 8  # Default length
-    use_numbers = False
-    use_symbols = False
+    keyword = request.form.get('keyword')
+    length = int(request.form.get('length', 8))  # Provide a default value in case it's not set
+    use_numbers = 'numbers' in request.form
+    use_symbols = 'symbols' in request.form
 
-    if request.method == 'POST':
-        keyword = request.form.get('keyword')
-        length = int(request.form.get('length'))
-        use_numbers = 'numbers' in request.form
-        use_symbols = 'symbols' in request.form
+    # Validate options and generate password
+    if not use_numbers and not use_symbols:
+        error = "Please select at least one option: Use Numbers or Use Symbols."
+    else:
+        password = generate_password(keyword, length, use_numbers, use_symbols)
+        strength = check_password_strength(password)
+        if not password:
+            error = "Failed to generate password. Ensure the keyword is shorter than the desired password length."
 
-        # Validate options
-        if not use_numbers and not use_symbols:
-            error = "Please select at least one option: Use Numbers or Use Symbols."
-        else:
-            password = generate_password(keyword, length, use_numbers, use_symbols)
-            strength = check_password_strength(password)
-            if not password:
-                error = "Failed to generate password. Ensure the keyword is shorter than the desired password length."
-
-        return render_template('createPassword.html', password=password, strength=strength, error=error, keyword=keyword, length=length, use_numbers=use_numbers, use_symbols=use_symbols)
-
-    return render_template('createPassword.html', password=password, keyword=keyword, length=length, use_numbers=use_numbers, use_symbols=use_symbols)
+    # Render the same template with new data
+    return render_template('createPassword.html', password=password, strength=strength, error=error, keyword=keyword,
+                           length=length, use_numbers=use_numbers, use_symbols=use_symbols)
 
 
-@app.route('/')
-def base():  # put application's code here
-    return redirect(url_for('login'))
-
-# will be deleting the base html as an app route once other pages are set up
-
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Initialize email and password variables
         email = None
         password = None
 
@@ -197,7 +184,8 @@ def login():
                     padded_account = account + [None] * (9 - len(account))
                     username, account_email, dob, account_password, _2fa_status, master_password_set, lock_state, lock_duration, lock_timestamp = padded_account
 
-
+                    dob = dob
+                    _2fa_status = _2fa_status
 
                     if email == account_email and password == decrypt(account_password):
                         # Check if master password is set
@@ -205,7 +193,8 @@ def login():
                             # Redirect to master password setup if not set
                             if request.is_json:
                                 # JSON response indicating master password setup is needed
-                                return jsonify({"status": "setup_master_password", "message": "Master password setup required"})
+                                return jsonify(
+                                    {"status": "setup_master_password", "message": "Master password setup required"})
                             else:
                                 session['username'] = username
                                 session['email'] = email
@@ -213,18 +202,11 @@ def login():
 
                     if email == account_email and password == account_password:
                         if request.is_json:
-                            # JSON response for the extension
                             return jsonify({"status": "success", "username": username, "email": email})
                         else:
-                            # Handle session for web app
                             session['username'] = username
                             session['email'] = email
-
-                            # Check if master password is set
-                            if not master_password_set or master_password_set.lower() == 'false':
-                                return redirect(url_for('master_password'))
-
-                            return redirect(url_for('settings'))
+                            return redirect(url_for('passwordList'))
 
         # Handle invalid email or password
         error_message = "Invalid email or password"
@@ -237,13 +219,13 @@ def login():
     return render_template("login.html", form=LoginForm())
 
 
-
 @app.route('/logout')
 def logout():
     # Clear the user's session
     session.clear()
 
     return redirect(url_for('login'))
+
 
 def send_2fa_verification_email(email, pin):
     msg = Message("Your MasterVault 2FA PIN",
@@ -252,13 +234,13 @@ def send_2fa_verification_email(email, pin):
     msg.body = f'Your 2FA verification PIN is: {pin}'
     mail.send(msg)
 
+
 def send_verification_email(email):
     msg = Message("Welcome to MasterVault",
                   sender='nickidummyacc@gmail.com',
                   recipients=[email])
     msg.body = 'Hello, your account has been registered successfully! Thank you for using MasterVault. (This is a test program for a college project)'
     mail.send(msg)
-
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -272,11 +254,11 @@ def register():
                 cform.email.data,
                 cform.dob.data,
                 encrypt(cform.password.data),
-                'empty',               # Master Password placeholder (to be set later)
-                'empty',               # Default 2FA status
-                'Unlocked',            # Lock state
-                'empty',               # Lock duration
-                'empty'                # Timestamp
+                'empty',  # Master Password placeholder (to be set later)
+                'empty',  # Default 2FA status
+                'Unlocked',  # Lock state
+                'empty',  # Lock duration
+                'empty'  # Timestamp
             ])
 
             # Send verification email after successfully saving account details
@@ -289,20 +271,28 @@ def register():
 
 @app.route('/master_password', methods=['GET', 'POST'])
 def master_password():
+    email = session.get('email')
+    # Check if the user is logged in and if the account is locked
+    if email:
+        locked, _ = get_lock_state_from_csv(email)
+        if locked == 'Locked':
+            flash(
+            'Your account is currently locked. You cannot set or reset the master password while the account is locked.',
+            'error')
+            return redirect(url_for('settings'))
+    
     if request.method == 'POST':
         master_password = request.form['master_password']
-        master_password = encrypt(master_password)
-        email = session['email']
 
-        # Save the master password to the user's account
-        save_master_password(email, master_password)
-
+        encrypted_master_password = encrypt(master_password)
+        # Save the encrypted master password to the user's account
+        save_master_password(email, encrypted_master_password)
         # Flash a success message
         flash('Master password set up successfully!', 'success')
-
         return redirect(url_for('passwordList'))
-
+    
     return render_template('masterPassword.html')
+
 
 def save_master_password(email, master_password):
     data = []
@@ -323,6 +313,7 @@ def save_master_password(email, master_password):
             csvwriter = csv.writer(file)
             csvwriter.writerows(data)
 
+
 @app.route('/addPassword', methods=['GET', 'POST'])
 def addPassword():
     if request.method == 'POST':
@@ -335,11 +326,12 @@ def addPassword():
         email = encrypt(email)
         password = encrypt(password)
 
-        saveNewPassword(username, website, email, password)
+        saveNewPassword(username,website, email, password)
 
         return redirect(url_for('passwordList'))
 
     return render_template('addPassword.html')
+
 
 def saveNewPassword(username, website, email, password):
     data = []
@@ -363,6 +355,7 @@ def saveNewPassword(username, website, email, password):
         csvwriter = csv.writer(file)
         csvwriter.writerows(data)
 
+
 @app.route('/passwordView/<website>/<email>/<password>', methods=['GET', 'POST'])
 def passwordView(website, email, password):
     if request.method == 'POST':
@@ -374,7 +367,7 @@ def passwordView(website, email, password):
         newWebsite = request.form['website']
         newEmail = request.form['email']
         newPassword = request.form['password']
-        saveChanges(username, website, email, password, newWebsite, newEmail, newPassword)
+        saveChanges(username, website, email, password, newEmail, newPassword, newWebsite)
         return redirect(url_for('passwordList'))
     return render_template('passwordView.html', website=website, email=email, password=password)
 
@@ -386,7 +379,8 @@ def saveChanges(username, old_website, old_email, old_password, new_website, new
         for row in csvreader:
             if row and row[0] == username:
                 for webIdx in range(int((len(row) - 1) / 3)):
-                    if row[webIdx * 3 + 1] == old_website and row[webIdx * 3 + 2] == old_email and row[webIdx * 3 + 3] == old_password:
+                    if row[webIdx * 3 + 1] == old_website and row[webIdx * 3 + 2] == old_email and row[
+                        webIdx * 3 + 3] == old_password:
                         row[webIdx * 3 + 1] = new_website
                         row[webIdx * 3 + 2] = new_email
                         row[webIdx * 3 + 3] = new_password
@@ -410,6 +404,7 @@ def resetPassword():
         return redirect(url_for('passwordList'))
 
     return render_template('resetPassword.html')
+
 
 def resetPassword(username, newPassword):
     data = []
@@ -446,22 +441,69 @@ def passwordList():
                     else:
                         user_passwords = get_passwords(username)
                         return render_template('passwordList.html', passwords=user_passwords)
-    
+
     else:
         # Redirect to the login page if the user is not logged in
         flash('Please log in to access your passwords.', 'warning')
         return redirect(url_for('login'))
-    
+
+
 @app.route('/lockedPasswordList', methods=['GET'])
 def lockedPasswordList():
     return render_template('lockedPasswordList.html')
+
+
+@app.route('/delete-password', methods=['POST'])
+def delete_password():
+    username = session.get('username')
+    if not username:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    data = request.json
+    website = data.get('website')
+    email = data.get('email')
+    password = data.get('password')
+
+    if not all([website, email, password]):
+        return jsonify({'error': 'Missing data'}), 400
+
+    success = remove_passwordList_entry(username, website, email, password)
+
+    if success:
+        return jsonify({'message': 'Password entry deleted successfully'}), 200
+    else:
+        return jsonify({'error': 'Entry not found'}), 404
+
+
+def remove_passwordList_entry(username, website, email, password):
+    updated_data = []
+    entry_found = False
+
+    with open('userData.csv', 'r', newline='') as file:
+        csvreader = csv.reader(file)
+        for row in csvreader:
+
+            if row and row[0] == username and row[1] == website and row[2] == email and row[3] == password:
+                entry_found = True
+                continue
+            updated_data.append(row)
+
+    if entry_found:
+        with open('userData.csv', 'w', newline='') as file:
+            csvwriter = csv.writer(file)
+            csvwriter.writerows(updated_data)
+
+    return entry_found
+
 
 @app.route('/settings', methods=['GET'])
 def settings():
     return render_template('settings.html')
 
+
 # Temporary storage for 2FA codes
 temporary_2fa_storage = {}
+
 
 @app.route('/enable_2fa', methods=['POST'])
 def enable_2fa():
@@ -469,11 +511,13 @@ def enable_2fa():
     update_2fa_status(user_email, True)
     return jsonify({'message': '2FA has been enabled'}), 200
 
+
 @app.route('/disable_2fa', methods=['POST'])
 def disable_2fa():
     user_email = request.json.get('email')
     update_2fa_status(user_email, False)
     return jsonify({'message': '2FA has been disabled'}), 200
+
 
 def update_2fa_status(email, status):
     updated = False
@@ -509,6 +553,7 @@ def get_2fa_status():
     else:
         return jsonify({'error': 'User not logged in'}), 401
 
+
 def get_user_by_username(username):
     with open('loginInfo.csv', 'r', newline='') as file:
         csvreader = csv.reader(file)
@@ -532,6 +577,7 @@ def setup_2fa():
     send_2fa_verification_email(user_email, pin)
     store_pin(user_email, pin)
     return jsonify({'message': 'A 2FA PIN has been sent to your email'}), 200
+
 
 @app.route('/verify_2fa', methods=['POST'])
 def verify_2fa():
@@ -585,6 +631,7 @@ def check_lock():
         update_lock_state_in_csv(email, 'Unlocked')
         return jsonify({'locked': False})
 
+
 def get_lock_state_from_csv(email):
     with open('loginInfo.csv', 'r', newline='') as file:
         csvreader = csv.reader(file)
@@ -592,6 +639,7 @@ def get_lock_state_from_csv(email):
             if row and row[1] == email:
                 return row[6], row[7]  # Return the lock state and lock duration
     return 'Unlocked', 'empty'  # Default to 'Unlocked' if not found
+
 
 def update_lock_state_in_csv(email, lock_state, lock_duration='empty', timestamp='empty'):
     data = []
@@ -611,7 +659,6 @@ def update_lock_state_in_csv(email, lock_state, lock_duration='empty', timestamp
             csvwriter = csv.writer(file)
             csvwriter.writerows(data)
     return updated
-
 
 
 @app.route('/unlock_account', methods=['POST'])
@@ -644,8 +691,8 @@ def verify_and_unlock_account(email, master_password):
                 if row[5] == master_password:
                     unlocked = True
                     row[6] = 'Unlocked'
-                    row[7] = 'empty'     # Set lock duration to 'empty'
-                    row[8] = 'empty'     # Set lock timestamp to 'empty'
+                    row[7] = 'empty'  # Set lock duration to 'empty'
+                    row[8] = 'empty'  # Set lock timestamp to 'empty'
             data.append(row)
 
     # Rewrite the CSV file with the updated data
@@ -655,7 +702,6 @@ def verify_and_unlock_account(email, master_password):
             csvwriter.writerows(data)
 
     return unlocked
-
 
 
 def lock_account_in_csv(email, lock_duration):
@@ -686,6 +732,7 @@ def lock_account_in_csv(email, lock_duration):
 
     return locked
 
+
 def send_2fa_verification_email(email, pin):
     msg = Message("Your MasterVault 2FA PIN",
                   sender='nickidummyacc@gmail.com',
@@ -693,10 +740,12 @@ def send_2fa_verification_email(email, pin):
     msg.body = f'Your 2FA verification PIN is: {pin}, Please note this code is only valid for 10 minutes.'
     mail.send(msg)
 
+
 def store_pin(email, pin):
     temporary_2fa_storage[email] = {
         'pin': pin, 'timestamp': datetime.datetime.now()
     }
+
 
 def is_valid_pin(email, entered_pin):
     pin_data = temporary_2fa_storage.get(email)
@@ -707,6 +756,7 @@ def is_valid_pin(email, entered_pin):
         if time_diff.total_seconds() <= 600:  # 10 minutes validity
             return True
     return False
+
 
 @app.route('/delete_account', methods=['POST'])
 def delete_account():
@@ -741,7 +791,6 @@ def delete_account():
         return jsonify({"success": True, "message": "Account successfully deleted."})
     else:
         return jsonify({"success": False, "message": "Account not found."})
-
 
 
 if __name__ == '__main__':

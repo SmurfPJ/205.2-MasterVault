@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "MasterVault",
   "version": "1.0",
-  "description": "Made by 2 clueless college students ._.",
+  "description": "A great & efficient way to save all your passwords.",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
