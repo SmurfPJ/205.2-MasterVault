@@ -616,5 +616,24 @@ function checkNewPasswordMatch() {
     }
 }
 
+//passwordList
+function deleteEntry(website, email, password) {
+    if (confirm('Are you sure you want to delete this entry?')) {
+        fetch('/delete-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({website: website, email: email, password: password})
+        }).then(response => {
+            if (response.ok) {
+                alert('Entry deleted successfully');
+                window.location.reload();
+            } else {
+                alert('Failed to delete entry');
+            }
+        });
+    }
+}
 
 
